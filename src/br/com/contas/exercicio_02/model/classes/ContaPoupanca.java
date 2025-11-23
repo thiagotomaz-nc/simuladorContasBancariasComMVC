@@ -18,8 +18,23 @@ public class ContaPoupanca extends ContaBancaria {
     }
 
     @Override
-    public double getValorInternoConta() {
+    public double getInfoAdicionalConta() {
       return saldoPoupanca;
+    }
+
+    @Override
+    public String getDescricaoConta() {
+      return "Conta Poupanca";
+    }
+
+    @Override
+    public TipoConta getTipoConta() {
+        return TipoConta.CONTAPOUPANCA;
+    }
+
+    @Override
+    public boolean isInfoAdicionalConta() {
+        return true;
     }
     
     

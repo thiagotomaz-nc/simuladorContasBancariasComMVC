@@ -22,14 +22,24 @@ public class ContaCorrente extends ContaBancaria {
     }
 
     @Override
-    public double getValorInternoConta() {
+    public double getInfoAdicionalConta() {
       return LIMITE_CREDITO;
     }
 
-   
+    @Override
+    public String getDescricaoConta() {
+        return "Conta Corrente";
+    }
 
-   
+    @Override
+    public TipoConta getTipoConta() {
+        return TipoConta.CONTACORRENTE;
+    }
 
-    
+    @Override
+    public boolean isInfoAdicionalConta() {
+       return false;
+    }
+
 
     }

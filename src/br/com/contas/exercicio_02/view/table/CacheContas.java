@@ -19,13 +19,11 @@ import java.util.Collection;
 */
 public class CacheContas {
         private final ArrayList<ContaBancaria> cacheContas  = new ArrayList<>();
-
-        
-        
+   
     public void atualizarCache(Collection<ContaBancaria> dadosContaBancaria) {
         this.cacheContas.clear();
         this.cacheContas.addAll(dadosContaBancaria);
-        
+                
         /*
         * Vantagens dessa implementação
         

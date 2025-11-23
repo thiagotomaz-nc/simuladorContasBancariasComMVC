@@ -41,5 +41,10 @@ public class ContaCorrente extends ContaBancaria {
        return false;
     }
 
+    @Override
+    public void setInfoAdicionalConta(double valor) {
+       
+    }
+
 
     }

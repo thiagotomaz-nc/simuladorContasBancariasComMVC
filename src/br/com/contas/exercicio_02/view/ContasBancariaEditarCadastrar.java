@@ -7,28 +7,47 @@
  */
 package br.com.contas.exercicio_02.view;
 
+import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.ContaCorrente;
+import br.com.contas.exercicio_02.model.classes.TipoConta;
+import br.com.contas.exercicio_02.util.ConfigDefaultMoedaBR;
+import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
+import br.com.contas.exercicio_02.util.Mensagens;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.text.NumberFormat;
 import java.util.Locale;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 
 /**
  *
  * @author Thiago Tomaz
  */
-public class ContasEdicaoCadastro extends javax.swing.JDialog {
+public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
 
     /**
      * Creates new form ContaCorrenteIG
      */
-    private NumberFormat formatoMoedaBrasil;
-    public ContasEdicaoCadastro(String iconeLaunch, Locale local) {
+    private ContaBancaria contaBancaria;
+
+    public ContasBancariaEditarCadastrar(JFrame parent, boolean modal, AcaoView acaoView, TipoConta tipo, ContaBancaria contaBancaria) {
+        super(parent, modal);
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(iconeLaunch));
-  
+        setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
+        this.contaBancaria = contaBancaria;
+
+        NumberFormatter numberFormatter = new NumberFormatter(ConfigDefaultMoedaBR.moeda_default_br());
+        setAlwaysOnTop(false);
+
+        txtInfoAdicionalConta.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
+        txtInfoAdicionalConta.setValue(0.00);
+
+        txtSaldoContaCorrente.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
+        txtSaldoContaCorrente.setValue(0.00);
     }
 
     /**
@@ -54,7 +73,6 @@ public class ContasEdicaoCadastro extends javax.swing.JDialog {
         txtSaldoContaCorrente = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Conta Corrente");
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -202,60 +220,50 @@ public class ContasEdicaoCadastro extends javax.swing.JDialog {
 
     }//GEN-LAST:event_txtNomeContaCorrenteActionPerformed
 
+
     private void btnSalvarEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarEditarActionPerformed
-       
+
+        /*por que não lançar um exception para o controller tratar?
+        pois aqui não faz sentido lançar uma exception para o Controller, já que
+        a janela ainda está aberta, e o usuário deve corrigir as informções.   
+         */
         btnSalvarEditar.hasFocus();
-        
+
         if (!txtNomeContaCorrente.getText().trim().toUpperCase().isEmpty() && !txtSaldoContaCorrente.getText().trim().isEmpty()) {
             if (txtNumeroDaConta.getText().trim().length() == 8) {
-                
+
                 //implementar o NumberFormat para trabalhar com moedas
-                String tempValor = txtSaldoContaCorrente.getText().trim().replace("R$","").replace(" ", "").replace(".", "").replace(",", ".");
-                             
-                double saldo = Double.parseDouble(tempValor);
+                Number saldoTemp = (Number) txtSaldoContaCorrente.getValue();
+                double saldo = saldoTemp != null ? saldoTemp.doubleValue() : 0;
+                Number valorInfoAdicionalTemp = (Number) txtInfoAdicionalConta.getValue();
+                double valorInfoAdicional = contaBancaria.isInfoAdicionalConta() ? valorInfoAdicionalTemp.doubleValue():0;
                 
                 // Correção caso o usuario digite -0, por acidente ou para testar o simulador
                 // Esse caso ocorreu comigo e pesquisando descrobri essa tecnica
-                if (saldo == 0 ) saldo=0;
-                
-                if (saldo >= 0) {
-                    cc = new ContaCorrente();
-                    cc.setNumeroConta(txtNumeroDaConta.getText().trim());
-                    cc.setNome(txtNomeContaCorrente.getText().trim().toUpperCase());
-                    cc.setSaldo(saldo);
-                    // JOptionPane.showMessageDialog(this, cc.showSaldo());
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Por favor, preencha o saldo com valor a partir de R$ 0 reais!");
+                contaBancaria.setNumeroConta(txtNumeroDaConta.getText().trim());
+                contaBancaria.setNome(txtNomeContaCorrente.getText().trim().toUpperCase());
+                contaBancaria.setSaldo(saldo);
+                contaBancaria.setInfoAdicionalConta(valorInfoAdicional);
+                // JOptionPane.showMessageDialog(this, cc.showSaldo());
+                dispose();
 
-                }
-            }else {
-                JOptionPane.showMessageDialog(this, "O campo numero da conta tem que estar completamente preenchido");
+            } else {
+                Mensagens.error("O campo numero da conta tem que estar completamente preenchido");
                 txtNumeroDaConta.setBorder(new LineBorder(Color.RED, 2));
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Por favor, preencha o nome e o saldo da conta!");
+            Mensagens.error("Por favor, preencha o nome e o saldo da conta!");
         }
+
+
     }//GEN-LAST:event_btnSalvarEditarActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
-        dispose();
+        fecharView();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jLabel1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jLabel1AncestorAdded
-        if (cc != null) {
-            setTitle(getTitle() + "  - Editar Conta Corrente");
-            txtNumeroDaConta.setText(cc.getNumeroConta());
-            txtNumeroDaConta.setEditable(false);
-            txtNumeroDaConta.setEnabled(false);
-            txtNomeContaCorrente.setText(cc.getNome());
-            txtSaldoContaCorrente.setText(cc.getSaldo()+"");
-           // txtlimiteContaCorrente.setText(cc.getLimiteCredito()+"");
-            
-            btnSalvarEditar.setText("Atualizar Cadastro");
-            cc = null;
-        }
+      
     }//GEN-LAST:event_jLabel1AncestorAdded
 
     /**
@@ -276,13 +284,16 @@ public class ContasEdicaoCadastro extends javax.swing.JDialog {
     private javax.swing.JFormattedTextField txtSaldoContaCorrente;
     // End of variables declaration//GEN-END:variables
 
-    private ContaCorrente cc = null;
+  public ContaBancaria getContaBancaria(){
+      return contaBancaria;
+  }
 
-    public ContaCorrente getContaCorrente() {
-        return cc;
+
+    public void isVisibletxtInfoAdicionalConta(boolean isEnable) {
+        txtInfoAdicionalConta.setEnabled(isEnable);
     }
 
-    public void setContaCorrente(ContaCorrente cc) {
-        this.cc = cc;
+    private void fecharView() {
+        dispose();
     }
 }

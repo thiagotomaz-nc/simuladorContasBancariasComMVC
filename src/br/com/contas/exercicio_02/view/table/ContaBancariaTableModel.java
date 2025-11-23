@@ -21,13 +21,12 @@ import javax.swing.table.AbstractTableModel;
  * @author Thiago Tomaz
  */
 public class ContaBancariaTableModel extends AbstractTableModel {
-    
+
     private CacheContas cacheContas = new CacheContas();
-    private String[] colunasPoupanca = {"#","Número da conta", "Nome do titular","Saldo","Saldo da poupança" };
-   
-    
+    private String[] colunasPoupanca = {"#", "Número da conta", "Nome do titular", "Saldo", "Tipo Conta","Saldo da poupança/Limite"};
+
     public ContaBancariaTableModel(CacheContas cacheContas) {
-         this.cacheContas = cacheContas;         
+        this.cacheContas = cacheContas;
     }
 
     @Override
@@ -38,8 +37,8 @@ public class ContaBancariaTableModel extends AbstractTableModel {
     @Override
     public boolean isCellEditable(int i, int i1) {
         return false;
-    } 
-   
+    }
+
     @Override
     public int getRowCount() {
         return cacheContas.sizeCache();
@@ -49,30 +48,36 @@ public class ContaBancariaTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return colunasPoupanca.length;
     }
-     
+
     @Override
     public Object getValueAt(int linha, int coluna) {
-        
+
         ContaBancaria cb = cacheContas.consultarConta(linha);
-        
-        switch(coluna){
-          case 0:
-              return linha+1;
-          case 1:
-              return cb.getNumeroConta();
-          case 2:
-              return cb.getNome();
-          case 3:
-              return ConfigDefaultMoedaBR.MOEDA_FORMATADA_BRL(ConfigDefaultMoedaBR.ArredondarValor(cb.getSaldo()));
-          case 4:
-              return ConfigDefaultMoedaBR.MOEDA_FORMATADA_BRL(ConfigDefaultMoedaBR.ArredondarValor(cb.getInfoAdicionalConta()));
+
+        switch (coluna) {
+            case 0:
+                return linha + 1;
+            case 1:
+                return cb.getNumeroConta();
+            case 2:
+                return cb.getNome();
+            case 3:
+                return ConfigDefaultMoedaBR.moeda_foratada_brl(ConfigDefaultMoedaBR.ArredondarValor(cb.getSaldo()));
+            case 4:
+                return cb.getDescricaoConta();
+            case 5:
+                return ConfigDefaultMoedaBR.moeda_foratada_brl(ConfigDefaultMoedaBR.ArredondarValor(cb.getInfoAdicionalConta()));
             default:
                 throw new IndexOutOfBoundsException("erro nas colunas");
-      }
-        
-       
+        }
+
     }
-    
-   // acima percebe-se um código limpo, livre de ifs desnecessarios graças ao polimorfismo;
-   // a tabela esta apenas exibindo os dados da lista nada mais. Essa é a função dela, nada de se preocupar com regras de necogio ou algo a parte, simplesmente exibir os dados;
+
+    public void atualizarTabela() {
+        fireTableDataChanged();
+
+    }
+
+    // acima percebe-se um código limpo, livre de ifs desnecessarios graças ao polimorfismo;
+    // a tabela esta apenas exibindo os dados da lista nada mais. Essa é a função dela, nada de se preocupar com regras de necogio ou algo a parte, simplesmente exibir os dados;
 }

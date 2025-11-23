@@ -36,6 +36,13 @@ public class ContaPoupanca extends ContaBancaria {
     public boolean isInfoAdicionalConta() {
         return true;
     }
+
+    @Override
+    public void setInfoAdicionalConta(double valor) {
+        saldoPoupanca=valor;
+    }
+
+ 
     
     
 

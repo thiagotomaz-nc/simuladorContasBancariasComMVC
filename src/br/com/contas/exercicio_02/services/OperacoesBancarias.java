@@ -1,5 +1,8 @@
 package br.com.contas.exercicio_02.services;
 
+import br.com.contas.exercicio_02.Exception.ContaExistenteException;
+import br.com.contas.exercicio_02.Exception.RegrasDeNegocioException;
+import br.com.contas.exercicio_02.Exception.SaldoInsuficienteException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.ContaCorrente;
 import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
@@ -151,9 +154,25 @@ public class OperacoesBancarias {
         }
     }
 
+    
+    //=============================================
+    //*** Regras para poder cadastrar no repositorio***
+    //=============================================
     public Collection<ContaBancaria> listarTodasContasBancarias() {
         return contaBancariasBancariaRepositorio.listarTodasContasBancariasRepository();
     }
+    
+   public ContaBancaria cadastrarConta(ContaBancaria conta) throws SaldoInsuficienteException, ContaExistenteException {
+       //saldo não pode ser negativo
+       if(conta.getSaldo() < 0){
+           throw new SaldoInsuficienteException(conta.getNome()+", o seu saldo insuficiente para cadastrar a conta");
+       }
+       if(contaBancariasBancariaRepositorio.consultarContaExistente(conta.getNumeroConta())){
+       throw new ContaExistenteException(conta.getNome()+" a conta já existe");
+       }
+       
+       return contaBancariasBancariaRepositorio.cadastrarConta(conta);
+   }
 
 }
 

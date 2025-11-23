@@ -8,27 +8,15 @@
 package br.com.contas.exercicio_02.main;
 
 import br.com.contas.exercicio_02.controller.ContasBancariasController;
-import br.com.contas.exercicio_02.model.classes.ContaCorrente;
-import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
 import br.com.contas.exercicio_02.services.OperacoesBancarias;
 import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
-import br.com.contas.exercicio_02.view.table.CorrenteTableDefaultRender;
-import br.com.contas.exercicio_02.view.table.PoupancaTableDefaultRender;
-import br.com.contas.exercicio_02.view.table.CorrenteTableModel;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
-import br.com.contas.exercicio_02.view.ContaCorrenteIG;
-import br.com.contas.exercicio_02.view.ContaPoupancaIG;
-import br.com.contas.exercicio_02.view.ContasDepositarDebitarIG;
 import br.com.contas.exercicio_02.view.TipoContaIG;
-import br.com.contas.exercicio_02.view.TransferenciaEntreContasBancariasIG;
 import br.com.contas.exercicio_02.view.table.CacheContas;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.TableColumnModel;
 
@@ -67,8 +55,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         this.operacoesBancarias = new OperacoesBancarias();
 
         //instanciando os objeto controlle
-        contasBancariasController = new ContasBancariasController(operacoesBancarias, cacheContas);
-
+        contasBancariasController = new ContasBancariasController(this, operacoesBancarias, cacheContas);
         contaBancariaModeloTable = new ContaBancariaTableModel(cacheContas);
         
         //atribuindo os models as suas respectivas tabelas;
@@ -84,6 +71,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         modeloColunaPoupanca.getColumn(2).setMaxWidth(2100);
         modeloColunaPoupanca.getColumn(3).setMaxWidth(200);
         modeloColunaPoupanca.getColumn(4).setMaxWidth(350);
+        modeloColunaPoupanca.getColumn(5).setMaxWidth(600);
 
         //aqui eu pego o model das colunas para poder manipular o seu tamanho posteriormente
      
@@ -93,7 +81,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         atualizarDataHora(dataLocal);
         startRelogio();
 
-        tabelaContabancaria.setDefaultRenderer(Object.class, new PoupancaTableDefaultRender());
+       
     }
 
     /**
@@ -602,7 +590,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }// </editor-fold>//GEN-END:initComponents
 
     private void MnPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnPoupancaActionPerformed
-        contaPoupancaGUI(null, true);
+       
 
     }//GEN-LAST:event_MnPoupancaActionPerformed
 
@@ -611,8 +599,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }//GEN-LAST:event_formWindowStateChanged
 
     private void MnContaCorrenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnContaCorrenteActionPerformed
-        contaCorrenteGUI(null, true);
-
+       
     }//GEN-LAST:event_MnContaCorrenteActionPerformed
 
     private void mnCreditarNaContaPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnCreditarNaContaPoupancaActionPerformed
@@ -666,22 +653,15 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }//GEN-LAST:event_formComponentHidden
 
     private void btnAdicionarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarContaActionPerformed
+        
         TipoContaIG tipoContaGUI = new TipoContaIG();
         tipoContaGUI.setModal(true);
         tipoContaGUI.setVisible(true);
-        int tipoConta = tipoContaGUI.getTipoConta();
+       
+       //A interface grafica não decide nada, apenas exibe e executa;
+        contasBancariasController.efetuarNovaConta(tipoContaGUI.getContaView());
 
-        if (!(tipoConta < 0)) {
-
-            if (tipoConta == 0) {
-                contaPoupancaGUI(null, true);
-            } else if (tipoConta == 1) {
-                contaCorrenteGUI(null, true);
-            }
-
-        }
-
-
+        contaBancariaModeloTable.atualizarTabela();
     }//GEN-LAST:event_btnAdicionarContaActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed

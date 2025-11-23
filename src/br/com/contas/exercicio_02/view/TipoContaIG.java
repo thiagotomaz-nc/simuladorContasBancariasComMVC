@@ -8,6 +8,7 @@
 package br.com.contas.exercicio_02.view;
 
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
+import br.com.contas.exercicio_02.model.classes.TipoConta;
 import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -115,31 +116,23 @@ public class TipoContaIG extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        dispose();
+        closeView();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void optoinPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optoinPoupancaActionPerformed
-        tipoConta = 0;
-        dispose();
+        setContaView(TipoConta.CONTAPOUPANCA);
+        closeView();
     }//GEN-LAST:event_optoinPoupancaActionPerformed
 
     private void optionCorrenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionCorrenteActionPerformed
-        tipoConta = 1;
-        dispose();
+        setContaView(TipoConta.CONTACORRENTE);
+        closeView();
     }//GEN-LAST:event_optionCorrenteActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    private int tipoConta = -1;
-
-    public int getTipoConta() {
-        return tipoConta;
-    }
-
-    public void setTipoConta(int tipoConta) {
-        this.tipoConta = tipoConta;
-    }
+    private TipoConta contaView;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup grupoBotoes;
@@ -149,14 +142,16 @@ public class TipoContaIG extends javax.swing.JDialog {
     private javax.swing.JRadioButton optoinPoupanca;
     // End of variables declaration//GEN-END:variables
 
-    private ContaBancaria cb = null;
-
-    public ContaBancaria getContaBancaria() {
-        return cb;
-
+    // cada metodo, deve fazer apenas uma ação;
+    public void setContaView(TipoConta tipoConta) {
+        this.contaView = tipoConta;
     }
 
-    public void setContaBancaria(ContaBancaria cb) {
-        this.cb = cb;
+    public TipoConta getContaView() {
+        return contaView;
+    }
+
+    private void closeView() {
+        dispose();
     }
 }

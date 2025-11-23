@@ -27,7 +27,7 @@ public class ConfigDefaultMoedaBR {
    
     //static → pertence à classe, não ao objeto
      
-    public static String MOEDA_FORMATADA_BRL(double valor) {
+    public static String moeda_foratada_brl(double valor) {
       // o DecimalFormat é um subclasse do NumberFormat,
         return  new DecimalFormat("#,##0.00").format(valor);
     }
@@ -36,6 +36,11 @@ public class ConfigDefaultMoedaBR {
     // RoundingMode.HALF_UP -> utilizar a regra mais comum do mundo real — o arredondamento tradicional (o famoso "5 arredonda para cima").
     public static double ArredondarValor(double valor){
         return new BigDecimal(valor).setScale(2,RoundingMode.HALF_UP).doubleValue();
+    }
+    
+     public static DecimalFormat moeda_default_br( ) {
+      // o DecimalFormat é um subclasse do NumberFormat,
+        return  new DecimalFormat("#,##0.00");
     }
    
 }

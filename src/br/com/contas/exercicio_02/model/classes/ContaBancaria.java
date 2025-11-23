@@ -39,9 +39,9 @@ public abstract class ContaBancaria {
         saldo -= debito; // verificar se saldo é maior que 0
     }
 
-// ** METODOS ABSTRATOS ** //
+    // ** METODOS ABSTRATOS ** //
     public abstract String showSaldo();
-    
+    public abstract void setInfoAdicionalConta(double valor);
     //serve tanto para retornar o valor do limite da conta corrente como o saldo da poupança, pois ambas são valores distintas e interna de cada conta.
     public abstract double getInfoAdicionalConta();
     //informa se o campo onde a informação adicional esta pode ser editado ou não;

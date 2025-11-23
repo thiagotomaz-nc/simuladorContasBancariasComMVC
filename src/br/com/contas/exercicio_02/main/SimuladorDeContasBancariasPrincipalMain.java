@@ -47,9 +47,6 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     //private CorrenteTableModel correnteTableModel;
     private ContaBancariaTableModel contaBancariaModeloTable;
 
-    private ContaPoupanca contaPoupanca = null;
-    private ContaCorrente contaCorrente = null;
-
     private TableColumnModel modeloColunaPoupanca;
     private TableColumnModel modeloColunasCorrente;
 
@@ -96,10 +93,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         atualizarDataHora(dataLocal);
         startRelogio();
 
-     
         tabelaContabancaria.setDefaultRenderer(Object.class, new PoupancaTableDefaultRender());
-
-        //
     }
 
     /**
@@ -827,30 +821,15 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JTable tabelaContabancaria;
     // End of variables declaration//GEN-END:variables
 
-    private boolean isContaPoupancaPreenchida() {
-        return contaPoupanca != null;
+  
+     private void limparSelecaoTabelas() {
+        tabelaContabancaria.clearSelection();
     }
-
-    private boolean isContaCorrentePreenchida() {
-        return contaCorrente != null;
-    }
-
-    private void contaCorrenteGUI(ContaCorrente contaCorrente, boolean cadastro) {
-        
-        limparSelecaoTabelas();
-    }
-
-    private void contaPoupancaGUI(ContaPoupanca contaPoupanca, boolean cadastro) {
-
-       
-        limparSelecaoTabelas();
-    }
-
-    private void limparSelecaoTabelas() {
-      
-        btnEditarConta.setEnabled(false);
-        btnExcluirConta.setEnabled(false);
-    }
+     
+     private void desativarBotoes(){
+         btnEditarConta.setEnabled(false);
+         btnExcluirConta.setEnabled(false);
+     }
 
     private void deletarContas() {
         

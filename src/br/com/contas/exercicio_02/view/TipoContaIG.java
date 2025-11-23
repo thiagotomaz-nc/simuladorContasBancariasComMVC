@@ -8,6 +8,7 @@
 package br.com.contas.exercicio_02.view;
 
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
+import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
 import java.awt.Color;
 import java.awt.Toolkit;
 import javax.swing.JOptionPane;
@@ -22,9 +23,9 @@ public class TipoContaIG extends javax.swing.JDialog {
     /**
      * Creates new form ContaBancaria
      */
-    public TipoContaIG(String iconeLaunch) {
+    public TipoContaIG() {
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(iconeLaunch));
+        setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
     }
 
     /**

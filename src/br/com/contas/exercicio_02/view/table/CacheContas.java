@@ -48,7 +48,15 @@ public class CacheContas {
         CONTAS REMOVIDAS não somem do cache.
         */
         
-           }
+       }
+    
+    public ContaBancaria consultarConta(int indice){
+        return cacheContas.get(indice);    
+    }
+    
+    public int sizeCache(){
+        return cacheContas.size();
+    }
     
     
         

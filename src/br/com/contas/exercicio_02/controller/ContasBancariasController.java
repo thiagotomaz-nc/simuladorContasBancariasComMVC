@@ -6,21 +6,21 @@
 package br.com.contas.exercicio_02.controller;
 
 import br.com.contas.exercicio_02.Exception.ContaExistenteException;
-import br.com.contas.exercicio_02.Exception.RegrasDeNegocioException;
+import br.com.contas.exercicio_02.Exception.NumeroContaVazioException;
 import br.com.contas.exercicio_02.Exception.SaldoInsuficienteException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.ContaCorrente;
 import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
 import br.com.contas.exercicio_02.model.classes.TipoConta;
-import br.com.contas.exercicio_02.services.OperacoesBancarias;
+import br.com.contas.exercicio_02.services.ContaBancariaServices;
 import br.com.contas.exercicio_02.util.Mensagens;
 import br.com.contas.exercicio_02.view.AcaoView;
 import br.com.contas.exercicio_02.view.ContasBancariaEditarCadastrar;
 import br.com.contas.exercicio_02.view.table.CacheContas;
-import java.util.Collection;
-import java.util.logging.Level;
+import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -28,38 +28,78 @@ import javax.swing.JFrame;
  */
 //Artigo utilizado par ao padrão MVCS https://www.devmedia.com.br/padrao-mvc-java-magazine/21995
 public class ContasBancariasController {
-
-    private final OperacoesBancarias operacoesServices;
+    
+    private final ContaBancariaServices contaBancariaServices;
     private final CacheContas cacheContas;
     private JFrame frame;
+    private ContaBancariaTableModel contaBancariaModeloTable;
+    private static final Logger LOGGER = Logger.getLogger(ContasBancariasController.class.getName());
+    private AcaoView acaoView;
+    // por que utilizar o static, pois sem o static teria que ter um Logger novo para cada objeto, o que não faz sentido.
+    // Logger não precisa saber quantos objetos existem.
+    // Ele só precisa saber qual classe está registrando mensagens.
 
-    public ContasBancariasController(JFrame parent, OperacoesBancarias operacoesServices, CacheContas cacheContas) {
-        this.operacoesServices = operacoesServices;
-        this.cacheContas = cacheContas;
+    public ContasBancariasController(JFrame parent) {
+        this.contaBancariaServices = new ContaBancariaServices();
+        this.cacheContas = new CacheContas();
         this.frame = parent;
+        this.contaBancariaModeloTable = new ContaBancariaTableModel(cacheContas);
+    }
+    
+    public ContaBancariaTableModel getContaBancariaModeloTable() {
+        return contaBancariaModeloTable;
     }
 
     // --------------------------------------------
     // MÉTODOS DE OPERAÇÕES BANCÁRIAS
     // --------------------------------------------
-    public void cadastrarConta(ContaBancaria conta) {
+    private void cadastrarConta(ContaBancaria conta) {
         try {
-            operacoesServices.cadastrarConta(conta);
+            contaBancariaServices.cadastrarConta(conta);
             Mensagens.informacao("Conta cadastrada com sucesso!\nTitular: " + conta.getNome() + "\nNúmero da Conta: " + conta.getNumeroConta());
-           cacheContas.atualizarCache(operacoesServices.listarTodasContasBancarias());
-                 
+           atualizarCacheDeContasBancarias();
+            
         } catch (SaldoInsuficienteException | ContaExistenteException ex) {
             Mensagens.error(ex.getMessage());
+        } catch (NumeroContaVazioException ex) {
+            LOGGER.info(ex.getMessage());
+        }
+    }
+    
+    private void editarConta(ContaBancaria contaBancaria) {
+        try {
+            contaBancariaServices.editarConta(contaBancaria);
+            Mensagens.informacao("Conta atualizada com sucesso!\nTitular: " + contaBancaria.getNome() + "\nNúmero da Conta: " + contaBancaria.getNumeroConta());
+            atualizarCacheDeContasBancarias();
+        } catch (SaldoInsuficienteException ex) {
+            Mensagens.error(ex.getMessage());
+        } catch (NumeroContaVazioException ex) {
+            LOGGER.info(ex.getMessage());
+        }
+    }
+    
+    public void excluirContaBancaria(int linha) {
+        if (linha > -1) {
+            ContaBancaria contaBancariaExcluir = cacheContas.consultarConta(linha);
+            int resposta = Mensagens.confirmar("Deseja realmente excluir essa conta?\n\nNúmero: "+contaBancariaExcluir.getNumeroConta()+"\nTitular: "+contaBancariaExcluir.getNome());
+            if(resposta==JOptionPane.YES_OPTION){
+                if (contaBancariaServices.excluirContaBancaria(contaBancariaExcluir) == null) {
+                    Mensagens.error("Conta não encontrara");
+                } else {
+                    atualizarCacheDeContasBancarias();
+                    Mensagens.informacao("Conta excluida com sucesso");
+                }
+            
+            }
         }
     }
 
     // --------------------------------------------
-    // MÉTODO PARA ATUALIZAR CACHE + UI/TABELA
+    // MÉTODO PARA ATUALIZAR CACHE + IG da TABELA
     // --------------------------------------------
-    private void atualizarUI() {
-        Collection dadosAtualizados = operacoesServices.listarTodasContasBancarias();
-        cacheContas.atualizarCache(dadosAtualizados);
-        // aqui você avisa seu TableModel para atualizar: tableModel.fireTableDataChanged();
+    private void atualizarCacheDeContasBancarias() {
+        cacheContas.atualizarCache(contaBancariaServices.listarTodasContasBancarias());
+        this.contaBancariaModeloTable.fireTableDataChanged();
     }
 
     // --------------------------------------------
@@ -67,37 +107,42 @@ public class ContasBancariasController {
     // No padrão MVC, o Controller é justamente o lugar onde a lógica de fluxo da aplicação deve ficar,
     // sem incluir regras de negócio pesadas (essas ficam no Service/Model).
     // --------------------------------------------
-    public void efetuarNovaConta(TipoConta tipo) {
+    public void efetuarNovaContaView(TipoConta tipo) {
         if (tipo == null) {
             return;
         }
-        abrirViewContaBancaria(AcaoView.CADASTRAR, tipo);
+        acaoView = AcaoView.CADASTRAR;
+        novaContaBancariaView(tipo);
     }
-
-    private void abrirViewContaBancaria(AcaoView acaoView, TipoConta tipo) {
-        ContasBancariaEditarCadastrar contasBancariaEditarCadastrar = new ContasBancariaEditarCadastrar(frame, true, acaoView, tipo, cadastroContaBancaria(tipo));
-        contasBancariaEditarCadastrar.setTitle(getAcaoView(acaoView) + " " + getTitulo(tipo));
-        contasBancariaEditarCadastrar.isVisibletxtInfoAdicionalConta(true);
-        contasBancariaEditarCadastrar.setVisible(true);
-
-        cadastrarConta(contasBancariaEditarCadastrar.getContaBancaria());
+    
+    private void novaContaBancariaView(TipoConta tipo) {
+        
+        ContaBancaria contaBancariaNova = tipoContaBancaria(tipo);
+        String nomeAcao = getPreTituloAcaoView(acaoView);
+        abrirViewContaBancariaView(nomeAcao, contaBancariaNova);
     }
-
-    public String getTitulo(TipoConta tipo) {
-        switch (tipo) {
-            case CONTACORRENTE:
-                return "Conta Corrente";
-            case CONTAPOUPANCA:
-                return "Conta Poupança";
-            default:
-                Mensagens.error("Conta não identificada");
-                throw new IllegalArgumentException("Conta não identificada: " + tipo);
+    
+    public void editarContaBancariaView(AcaoView acaoView, int linha) {
+        if (linha > -1) {
+            this.acaoView = acaoView;
+            String nomeAcao = getPreTituloAcaoView(this.acaoView);
+            abrirViewContaBancariaView(nomeAcao, cacheContas.consultarConta(linha));
         }
-
     }
-
-    public ContaBancaria cadastroContaBancaria(TipoConta tipo) {
-
+    
+    private void abrirViewContaBancariaView(String preTitulo, ContaBancaria conta) {
+        
+        ContasBancariaEditarCadastrar contasBancariaEditarCadastrar = new ContasBancariaEditarCadastrar(frame, true, conta);
+        contasBancariaEditarCadastrar.setTitle(preTitulo + " " + conta.getDescricaoConta());
+        contasBancariaEditarCadastrar.setVisible(true);
+        contasBancariaEditarCadastrar.setNomeDoBotao(preTitulo + " " + conta.getDescricaoConta());
+        
+        getCadastrarEditarContaBancaria(contasBancariaEditarCadastrar.getContaBancaria());
+        
+    }
+    
+    public ContaBancaria tipoContaBancaria(TipoConta tipo) {
+        
         switch (tipo) {
             case CONTACORRENTE:
                 return new ContaCorrente();
@@ -107,10 +152,10 @@ public class ContasBancariasController {
                 Mensagens.error("Conta não identificada");
                 throw new IllegalArgumentException("Conta não identificada: " + tipo);
         }
-
+        
     }
-
-    public String getAcaoView(AcaoView acaoView) {
+    
+    public String getPreTituloAcaoView(AcaoView acaoView) {
         switch (acaoView) {
             case CADASTRAR:
                 return "Cadastrar";
@@ -120,21 +165,25 @@ public class ContasBancariasController {
                 Mensagens.error("Conta não identificada");
                 throw new IllegalArgumentException("Conta não identificada: " + acaoView);
         }
-
+        
     }
-
-    public boolean getInfoAdicional(TipoConta tipo) {
-        switch (tipo) {
-            case CONTACORRENTE:
-                return false;
-            case CONTAPOUPANCA:
-                return true;
+    
+    private void getCadastrarEditarContaBancaria(ContaBancaria contaBancaria) {
+        switch (acaoView) {
+            case CADASTRAR:
+                cadastrarConta(contaBancaria);
+                break;
+            case EDITAR:
+                editarConta(contaBancaria);
+                break;
             default:
-                Mensagens.error("Conta não identificada");
-                throw new IllegalArgumentException("Conta não identificada: " + tipo);
-
+                Mensagens.error("Operação não encontrada");
+                throw new IllegalArgumentException("erro na informação");
+            
         }
+        
     }
+    
 }
 
 /*

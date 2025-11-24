@@ -8,8 +8,10 @@
 package br.com.contas.exercicio_02.main;
 
 import br.com.contas.exercicio_02.controller.ContasBancariasController;
+import br.com.contas.exercicio_02.services.ContaBancariaServices;
 import br.com.contas.exercicio_02.services.OperacoesBancarias;
 import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
+import br.com.contas.exercicio_02.view.AcaoView;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
 import br.com.contas.exercicio_02.view.TipoContaIG;
 import br.com.contas.exercicio_02.view.table.CacheContas;
@@ -30,13 +32,8 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
      * Creates new form Principal
      */
     private ContasBancariasController contasBancariasController;
-    private OperacoesBancarias operacoesBancarias;
-    private CacheContas cacheContas;
-    //private CorrenteTableModel correnteTableModel;
-    private ContaBancariaTableModel contaBancariaModeloTable;
 
-    private TableColumnModel modeloColunaPoupanca;
-    private TableColumnModel modeloColunasCorrente;
+    private TableColumnModel contaBancariaModelColumn;
 
     private int countPoupanca;
     private int countCorrente;
@@ -50,38 +47,31 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
 
         setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
 
-        //instanciando o arrayList e o objetos operações bancarias
-        this.cacheContas = new CacheContas();
-        this.operacoesBancarias = new OperacoesBancarias();
-
         //instanciando os objeto controlle
-        contasBancariasController = new ContasBancariasController(this, operacoesBancarias, cacheContas);
-        contaBancariaModeloTable = new ContaBancariaTableModel(cacheContas);
-        
+        contasBancariasController = new ContasBancariasController(this);
+
         //atribuindo os models as suas respectivas tabelas;
-        tabelaContabancaria.setModel(contaBancariaModeloTable);
+        tabelaContabancaria.setModel(contasBancariasController.getContaBancariaModeloTable());
 
         //aqui eu pego o model das colunas para poder manipular o seu tamanho posteriormente
-        modeloColunaPoupanca = tabelaContabancaria.getColumnModel();
+        contaBancariaModelColumn = tabelaContabancaria.getColumnModel();
 
         // aqui eu manipulo o tamanho das colunas da tabela 
         // ao usar o maxWidth, consigo manipular o tamanho das colunas proporcionalmente;
-        modeloColunaPoupanca.getColumn(0).setMaxWidth(50);
-        modeloColunaPoupanca.getColumn(1).setMaxWidth(280);
-        modeloColunaPoupanca.getColumn(2).setMaxWidth(2100);
-        modeloColunaPoupanca.getColumn(3).setMaxWidth(200);
-        modeloColunaPoupanca.getColumn(4).setMaxWidth(350);
-        modeloColunaPoupanca.getColumn(5).setMaxWidth(600);
+        contaBancariaModelColumn.getColumn(0).setMaxWidth(50);
+        contaBancariaModelColumn.getColumn(1).setMaxWidth(280);
+        contaBancariaModelColumn.getColumn(2).setMaxWidth(2100);
+        contaBancariaModelColumn.getColumn(3).setMaxWidth(200);
+        contaBancariaModelColumn.getColumn(4).setMaxWidth(350);
+        contaBancariaModelColumn.getColumn(5).setMaxWidth(600);
 
         //aqui eu pego o model das colunas para poder manipular o seu tamanho posteriormente
-     
         //**** obs.: NÃO precisei desativar o AUTO_RESEZI (redimensionamento automatico) das tabelas;
         //configurações da data e hora
         dataLocal = LocalDateTime.now();
         atualizarDataHora(dataLocal);
         startRelogio();
 
-       
     }
 
     /**
@@ -590,7 +580,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }// </editor-fold>//GEN-END:initComponents
 
     private void MnPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnPoupancaActionPerformed
-       
+
 
     }//GEN-LAST:event_MnPoupancaActionPerformed
 
@@ -599,46 +589,41 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }//GEN-LAST:event_formWindowStateChanged
 
     private void MnContaCorrenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MnContaCorrenteActionPerformed
-       
+
     }//GEN-LAST:event_MnContaCorrenteActionPerformed
 
     private void mnCreditarNaContaPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnCreditarNaContaPoupancaActionPerformed
 
-        
         limparSelecaoTabelas();
     }//GEN-LAST:event_mnCreditarNaContaPoupancaActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
 
-       
-
         limparSelecaoTabelas();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-       
 
         limparSelecaoTabelas();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-        
+
         limparSelecaoTabelas();
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-       
+
         limparSelecaoTabelas();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-       
+
         limparSelecaoTabelas();
             }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void mnTransferenciaEntreCorrentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnTransferenciaEntreCorrentesActionPerformed
 
-        
         limparSelecaoTabelas();
 
     }//GEN-LAST:event_mnTransferenciaEntreCorrentesActionPerformed
@@ -653,27 +638,29 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }//GEN-LAST:event_formComponentHidden
 
     private void btnAdicionarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarContaActionPerformed
-        
+
         TipoContaIG tipoContaGUI = new TipoContaIG();
         tipoContaGUI.setModal(true);
         tipoContaGUI.setVisible(true);
-       
-       //A interface grafica não decide nada, apenas exibe e executa;
-        contasBancariasController.efetuarNovaConta(tipoContaGUI.getContaView());
 
-        contaBancariaModeloTable.atualizarTabela();
+        //A interface grafica não decide nada, apenas exibe e executa;
+        contasBancariasController.efetuarNovaContaView(tipoContaGUI.getContaView());
+
+        // contaBancariaModeloTable.atualizarTabela();
     }//GEN-LAST:event_btnAdicionarContaActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
-       
+
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnExcluirContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirContaActionPerformed
-        deletarContas();
+       contasBancariasController.excluirContaBancaria(tabelaContabancaria.getSelectedRow());
 
     }//GEN-LAST:event_btnExcluirContaActionPerformed
 
     private void btnEditarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarContaActionPerformed
+       
+        contasBancariasController.editarContaBancariaView(AcaoView.EDITAR, tabelaContabancaria.getSelectedRow());
         
     }//GEN-LAST:event_btnEditarContaActionPerformed
 
@@ -689,16 +676,16 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
 
     private void mnTransferenciaCorrentePoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnTransferenciaCorrentePoupancaActionPerformed
 
-       
+
     }//GEN-LAST:event_mnTransferenciaCorrentePoupancaActionPerformed
 
     private void mnTransferenciaPoupancaCorrenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnTransferenciaPoupancaCorrenteActionPerformed
 
-        
+
     }//GEN-LAST:event_mnTransferenciaPoupancaCorrenteActionPerformed
 
     private void mnTransferenciaEntrePoupancasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnTransferenciaEntrePoupancasActionPerformed
-       
+
     }//GEN-LAST:event_mnTransferenciaEntrePoupancasActionPerformed
 
     private void jMenu3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu3ActionPerformed
@@ -801,22 +788,21 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JTable tabelaContabancaria;
     // End of variables declaration//GEN-END:variables
 
-  
-     private void limparSelecaoTabelas() {
+    private void limparSelecaoTabelas() {
         tabelaContabancaria.clearSelection();
     }
-     
-     private void desativarBotoes(){
-         btnEditarConta.setEnabled(false);
-         btnExcluirConta.setEnabled(false);
-     }
+
+    private void desativarBotoes() {
+        btnEditarConta.setEnabled(false);
+        btnExcluirConta.setEnabled(false);
+    }
 
     private void deletarContas() {
-        
+
     }
 
     private void atualizarCountContas(int incrementoDecremento) {
-        
+
     }
 
     private void atualizarDataHora(LocalDateTime dataLocal) {

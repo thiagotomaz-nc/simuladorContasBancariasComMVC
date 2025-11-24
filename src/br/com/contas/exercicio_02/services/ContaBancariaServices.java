@@ -10,10 +10,8 @@ import br.com.contas.exercicio_02.repository.ContaBancariaRepositorio;
 import java.util.Collection;
 import javax.swing.JOptionPane;
 
-
 //Artigo utilizado par ao padrão MVCS https://www.devmedia.com.br/padrao-mvc-java-magazine/21995
-
-public class OperacoesBancarias {
+public class ContaBancariaServices {
 
     private ContaBancariaRepositorio contaBancariasBancariaRepositorio = new ContaBancariaRepositorio();
 
@@ -154,26 +152,58 @@ public class OperacoesBancarias {
         }
     }
 
-    
     //=============================================
     //*** Regras para poder cadastrar no repositorio***
     //=============================================
     public Collection<ContaBancaria> listarTodasContasBancarias() {
         return contaBancariasBancariaRepositorio.listarTodasContasBancariasRepository();
     }
-    
-   public ContaBancaria cadastrarConta(ContaBancaria conta) throws SaldoInsuficienteException, ContaExistenteException {
-       //saldo não pode ser negativo
-       if(conta.getSaldo() < 0){
-           throw new SaldoInsuficienteException(conta.getNome()+", o seu saldo insuficiente para cadastrar a conta");
-       }
-       if(contaBancariasBancariaRepositorio.consultarContaExistente(conta.getNumeroConta())){
-       throw new ContaExistenteException(conta.getNome()+" a conta já existe");
-       }
-       
-       return contaBancariasBancariaRepositorio.cadastrarConta(conta);
-   }
 
+    public ContaBancaria cadastrarConta(ContaBancaria conta) throws ContaExistenteException, NumeroContaVazioException, SaldoInsuficienteException {
+        //saldo não pode ser negativo
+        //caso eles sejam utilizados novamente, transformar em metodos da classe services
+
+        saldoSuficiente(conta.getSaldo());
+        saldoSuficiente(conta.getInfoAdicionalConta());
+        isNumeroContaVazia(conta.getNumeroConta());
+
+        consultarContaExistente(conta.getNumeroConta());
+
+        return contaBancariasBancariaRepositorio.cadastrarConta(conta);
+    }
+
+    public ContaBancaria editarConta(ContaBancaria contaBancaria) throws SaldoInsuficienteException, NumeroContaVazioException {
+        saldoSuficiente(contaBancaria.getSaldo());
+        saldoSuficiente(contaBancaria.getInfoAdicionalConta());
+        isNumeroContaVazia(contaBancaria.getNumeroConta());
+
+        return contaBancariasBancariaRepositorio.atualizarConta(contaBancaria);
+    }
+    
+    public ContaBancaria excluirContaBancaria(ContaBancaria conta){
+        return contaBancariasBancariaRepositorio.excluirContaBancaria(conta);
+    }
+
+    //=============================================
+    //*** Regras em metodos para serem reaproveitados***
+    //=============================================
+    public void saldoSuficiente(double valor) throws SaldoInsuficienteException {
+        if (valor < 0) {
+            throw new SaldoInsuficienteException("Saldo(s) insuficiente para cadastrar a conta\nTente novamente!");
+        }
+    }
+
+    public void consultarContaExistente(String numeroDaConta) throws ContaExistenteException {
+        if (contaBancariasBancariaRepositorio.consultarContaExistente(numeroDaConta.trim())) {
+            throw new ContaExistenteException("Número da conta indisponivel");
+        }
+    }
+
+    private void isNumeroContaVazia(String numeroConta) throws NumeroContaVazioException {
+        if (numeroConta == null) {
+            throw new NumeroContaVazioException();
+        }
+    }
 }
 
 /*

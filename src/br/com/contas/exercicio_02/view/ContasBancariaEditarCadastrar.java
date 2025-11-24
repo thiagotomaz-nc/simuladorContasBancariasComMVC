@@ -34,7 +34,7 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
      */
     private ContaBancaria contaBancaria;
 
-    public ContasBancariaEditarCadastrar(JFrame parent, boolean modal, AcaoView acaoView, TipoConta tipo, ContaBancaria contaBancaria) {
+    public ContasBancariaEditarCadastrar(JFrame parent, boolean modal, ContaBancaria contaBancaria) {
         super(parent, modal);
         initComponents();
         setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
@@ -43,11 +43,17 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
         NumberFormatter numberFormatter = new NumberFormatter(ConfigDefaultMoedaBR.moeda_default_br());
         setAlwaysOnTop(false);
 
+        //A magica do polimorfismo, funcionando corretamente, sem if's limpo e funcional;
+        txtNumeroDaConta.setText(this.contaBancaria.getNumeroConta());
+        txtNomeContaCorrente.setText(this.contaBancaria.getNome());
+        
         txtInfoAdicionalConta.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        txtInfoAdicionalConta.setValue(0.00);
+        txtInfoAdicionalConta.setValue(this.contaBancaria.getInfoAdicionalConta());
 
         txtSaldoContaCorrente.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
-        txtSaldoContaCorrente.setValue(0.00);
+        txtSaldoContaCorrente.setValue(this.contaBancaria.getSaldo());
+               
+        txtInfoAdicionalConta.setEnabled(contaBancaria.isInfoAdicionalConta());
     }
 
     /**
@@ -67,10 +73,10 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
         btnSalvarEditar = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         txtNumeroDaConta = new javax.swing.JFormattedTextField();
         txtInfoAdicionalConta = new javax.swing.JFormattedTextField();
         txtSaldoContaCorrente = new javax.swing.JFormattedTextField();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -125,9 +131,6 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Número da conta:");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel5.setText("com dígito verificador");
-
         try {
             txtNumeroDaConta.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("######-#")));
         } catch (java.text.ParseException ex) {
@@ -141,62 +144,66 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
 
         txtSaldoContaCorrente.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel6.setText("com dígito verificador");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel3))
-                    .addComponent(jblSaldo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSalvarEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtNomeContaCorrente, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(txtNumeroDaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel5))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtSaldoContaCorrente, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                            .addComponent(txtInfoAdicionalConta, javax.swing.GroupLayout.Alignment.LEADING))))
+                        .addComponent(btnSalvarEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel3))
+                            .addComponent(jblSaldo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(19, 19, 19)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtInfoAdicionalConta, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNomeContaCorrente, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtNumeroDaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel6))
+                            .addComponent(txtSaldoContaCorrente, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(34, 34, 34))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtNumeroDaConta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel5)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jLabel1)
                     .addComponent(txtNomeContaCorrente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jblSaldo)
                     .addComponent(txtSaldoContaCorrente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtInfoAdicionalConta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSalvarEditar)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addGap(23, 23, 23))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -222,16 +229,16 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
 
 
     private void btnSalvarEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarEditarActionPerformed
-
         /*por que não lançar um exception para o controller tratar?
         pois aqui não faz sentido lançar uma exception para o Controller, já que
         a janela ainda está aberta, e o usuário deve corrigir as informções.   
          */
         btnSalvarEditar.hasFocus();
 
-        if (!txtNomeContaCorrente.getText().trim().toUpperCase().isEmpty() && !txtSaldoContaCorrente.getText().trim().isEmpty()) {
+        if (!txtNumeroDaConta.getText().trim().toUpperCase().isEmpty() && !txtNomeContaCorrente.getText().trim().toUpperCase().isEmpty() && !txtSaldoContaCorrente.getText().trim().isEmpty() && !txtInfoAdicionalConta.getText().trim().toUpperCase().isEmpty()) {
+            
             if (txtNumeroDaConta.getText().trim().length() == 8) {
-
+                 
                 //implementar o NumberFormat para trabalhar com moedas
                 Number saldoTemp = (Number) txtSaldoContaCorrente.getValue();
                 double saldo = saldoTemp != null ? saldoTemp.doubleValue() : 0;
@@ -244,18 +251,17 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
                 contaBancaria.setNome(txtNomeContaCorrente.getText().trim().toUpperCase());
                 contaBancaria.setSaldo(saldo);
                 contaBancaria.setInfoAdicionalConta(valorInfoAdicional);
-                // JOptionPane.showMessageDialog(this, cc.showSaldo());
+               
                 dispose();
+                
 
             } else {
                 Mensagens.error("O campo numero da conta tem que estar completamente preenchido");
                 txtNumeroDaConta.setBorder(new LineBorder(Color.RED, 2));
             }
         } else {
-            Mensagens.error("Por favor, preencha o nome e o saldo da conta!");
+            Mensagens.error("Por favor, preencha todos os campos da sua conta!");
         }
-
-
     }//GEN-LAST:event_btnSalvarEditarActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -275,7 +281,7 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jblSaldo;
     private javax.swing.JFormattedTextField txtInfoAdicionalConta;
@@ -289,11 +295,12 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
   }
 
 
-    public void isVisibletxtInfoAdicionalConta(boolean isEnable) {
-        txtInfoAdicionalConta.setEnabled(isEnable);
-    }
 
     private void fecharView() {
         dispose();
+    }
+
+    public void setNomeDoBotao(String string) {
+      btnSalvarEditar.setText(string);
     }
 }

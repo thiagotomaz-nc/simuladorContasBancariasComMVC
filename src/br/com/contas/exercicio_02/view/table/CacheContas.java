@@ -9,6 +9,7 @@ import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.swing.JTable;
 
 /**
  *
@@ -19,11 +20,16 @@ import java.util.Collection;
 */
 public class CacheContas {
         private final ArrayList<ContaBancaria> cacheContas  = new ArrayList<>();
+        
+    
+
+       
+        
    
     public void atualizarCache(Collection<ContaBancaria> dadosContaBancaria) {
         this.cacheContas.clear();
         this.cacheContas.addAll(dadosContaBancaria);
-                
+       
         /*
         * Vantagens dessa implementação
         

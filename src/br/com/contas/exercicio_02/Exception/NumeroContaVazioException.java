@@ -9,16 +9,16 @@ package br.com.contas.exercicio_02.Exception;
  *
  * @author Thiago Tomaz
  */
-public class RegrasDeNegocioException extends Exception{
+public class NumeroContaVazioException extends Exception{
 
-    public RegrasDeNegocioException() {
+    public NumeroContaVazioException() {
     }
 
-    public RegrasDeNegocioException(String string) {
+    public NumeroContaVazioException(String string) {
         super(string);
     }
 
-    public RegrasDeNegocioException(String string, Throwable thrwbl) {
+    public NumeroContaVazioException(String string, Throwable thrwbl) {
         super(string, thrwbl);
     }
     

@@ -6,14 +6,7 @@
 package br.com.contas.exercicio_02.view.table;
 
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
-import br.com.contas.exercicio_02.model.classes.ContaCorrente;
-import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
 import br.com.contas.exercicio_02.util.ConfigDefaultMoedaBR;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -23,10 +16,12 @@ import javax.swing.table.AbstractTableModel;
 public class ContaBancariaTableModel extends AbstractTableModel {
 
     private CacheContas cacheContas = new CacheContas();
+    
     private String[] colunasPoupanca = {"#", "Número da conta", "Nome do titular", "Saldo", "Tipo Conta","Saldo da poupança/Limite"};
 
     public ContaBancariaTableModel(CacheContas cacheContas) {
         this.cacheContas = cacheContas;
+       
     }
 
     @Override

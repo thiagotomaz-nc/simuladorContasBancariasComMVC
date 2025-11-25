@@ -8,8 +8,8 @@
 package br.com.contas.exercicio_02.view;
 
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
-import br.com.contas.exercicio_02.model.classes.TipoConta;
-import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
+import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
 import java.awt.Color;
 import java.awt.Toolkit;
 import javax.swing.JOptionPane;
@@ -120,19 +120,19 @@ public class TipoContaIG extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void optoinPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optoinPoupancaActionPerformed
-        setContaView(TipoConta.CONTAPOUPANCA);
+        setContaView(EnumTipoConta.CONTAPOUPANCA);
         closeView();
     }//GEN-LAST:event_optoinPoupancaActionPerformed
 
     private void optionCorrenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionCorrenteActionPerformed
-        setContaView(TipoConta.CONTACORRENTE);
+        setContaView(EnumTipoConta.CONTACORRENTE);
         closeView();
     }//GEN-LAST:event_optionCorrenteActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    private TipoConta contaView;
+    private EnumTipoConta contaView;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup grupoBotoes;
@@ -143,11 +143,11 @@ public class TipoContaIG extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     // cada metodo, deve fazer apenas uma ação;
-    public void setContaView(TipoConta tipoConta) {
+    public void setContaView(EnumTipoConta tipoConta) {
         this.contaView = tipoConta;
     }
 
-    public TipoConta getContaView() {
+    public EnumTipoConta getContaView() {
         return contaView;
     }
 

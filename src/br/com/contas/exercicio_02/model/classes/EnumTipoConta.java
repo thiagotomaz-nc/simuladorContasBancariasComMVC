@@ -13,6 +13,6 @@ package br.com.contas.exercicio_02.model.classes;
 /*
     Um enum (abreviação de enumeration, ou enumeração) é um tipo especial em Java que representa um conjunto fixo de constantes nomeadas.
 */
-public enum TipoConta {
-    CONTACORRENTE, CONTAPOUPANCA
+public enum EnumTipoConta {
+    BANCARIA,CONTACORRENTE, CONTAPOUPANCA
 }

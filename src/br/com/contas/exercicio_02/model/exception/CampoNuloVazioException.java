@@ -3,23 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.contas.exercicio_02.Exception;
+package br.com.contas.exercicio_02.model.exception;
 
 /**
  *
  * @author Thiago Tomaz
  */
-public class ContaExistenteException extends Exception{
+public class CampoNuloVazioException extends Exception {
 
-    public ContaExistenteException() {
+    public CampoNuloVazioException() {
     }
 
-    public ContaExistenteException(String string) {
+    public CampoNuloVazioException(String string) {
         super(string);
     }
 
-    public ContaExistenteException(String string, Throwable thrwbl) {
+    public CampoNuloVazioException(String string, Throwable thrwbl) {
         super(string, thrwbl);
     }
-    
+
 }

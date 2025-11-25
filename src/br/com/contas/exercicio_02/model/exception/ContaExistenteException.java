@@ -3,22 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.contas.exercicio_02.Exception;
+package br.com.contas.exercicio_02.model.exception;
 
 /**
  *
  * @author Thiago Tomaz
  */
-public class SaldoInsuficienteException extends Exception{
+public class ContaExistenteException extends Exception{
 
-    public SaldoInsuficienteException() {
+    public ContaExistenteException() {
     }
 
-    public SaldoInsuficienteException(String string) {
+    public ContaExistenteException(String string) {
         super(string);
     }
 
-    public SaldoInsuficienteException(String string, Throwable thrwbl) {
+    public ContaExistenteException(String string, Throwable thrwbl) {
         super(string, thrwbl);
     }
     

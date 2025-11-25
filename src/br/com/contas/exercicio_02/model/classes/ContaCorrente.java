@@ -32,8 +32,8 @@ public class ContaCorrente extends ContaBancaria {
     }
 
     @Override
-    public TipoConta getTipoConta() {
-        return TipoConta.CONTACORRENTE;
+    public EnumTipoConta getTipoConta() {
+        return EnumTipoConta.CONTACORRENTE;
     }
 
     @Override
@@ -45,6 +45,13 @@ public class ContaCorrente extends ContaBancaria {
     public void setInfoAdicionalConta(double valor) {
        
     }
+
+    @Override
+    public String getDescricaoInfoAdicionalCampo() {
+       return "Limite Conta Corrente [R$]:";
+    }
+    
+    
 
 
     }

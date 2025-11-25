@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.contas.exercicio_02.util;
+package br.com.contas.exercicio_02.model.util;
 
 import java.awt.Color;
 import java.awt.Image;

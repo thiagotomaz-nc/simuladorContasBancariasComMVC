@@ -5,7 +5,7 @@ public abstract class ContaBancaria {
     private String nome;
     private double saldo;
     private String numeroConta;
-    private TipoConta tipoConta;
+    private EnumTipoConta tipoConta;
 
     public String getNumeroConta() {
         return numeroConta;
@@ -41,6 +41,8 @@ public abstract class ContaBancaria {
 
     // ** METODOS ABSTRATOS ** //
     public abstract String showSaldo();
+    //
+    public abstract String getDescricaoInfoAdicionalCampo();
     public abstract void setInfoAdicionalConta(double valor);
     //serve tanto para retornar o valor do limite da conta corrente como o saldo da poupança, pois ambas são valores distintas e interna de cada conta.
     public abstract double getInfoAdicionalConta();
@@ -49,5 +51,5 @@ public abstract class ContaBancaria {
     //serve tanto para retornar o valor do limite da conta corrente como o saldo da poupança, pois ambas são valores distintas e interna de cada conta.
     public abstract String getDescricaoConta();
     //cada subclasse vai retornar o seu tipo de conta
-    public abstract TipoConta getTipoConta();
+    public abstract EnumTipoConta getTipoConta();
 }

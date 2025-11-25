@@ -6,6 +6,8 @@
 package br.com.contas.exercicio_02.repository;
 
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
+import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +39,7 @@ public class ContaBancariaRepositorio {
     public boolean consultarContaExistente(String chave) {
         return contasBancarias.containsKey(chave);
     }
-
+        
     public ContaBancaria atualizarConta(ContaBancaria conta) {
         return contasBancarias.replace(conta.getNumeroConta(), conta);
         /*  O meto replace retorna o objeto antigo que foi atualizado ou null caso ele não seja encontrado
@@ -54,20 +56,33 @@ public class ContaBancariaRepositorio {
     }
 
     public ContaBancaria excluirContaBancaria(ContaBancaria conta) {
-       return contasBancarias.remove(conta.getNumeroConta());
-         
+       return contasBancarias.remove(conta.getNumeroConta());  
     }
 
     public ContaBancaria consultarContaBancaria(String chave) {
         return contasBancarias.get(chave);
     }
-
     
     public Collection<ContaBancaria> listarTodasContasBancariasRepository() {
         return contasBancarias.values();
     }
     
- 
+    public Collection<ContaBancaria> filtrarContaBancaria(EnumTipoConta tipoConta) {
+         //Percorre-se todo o hashMap pelos values dele
+         ArrayList<ContaBancaria> ContasFiltradas = new ArrayList();
+         
+         for (ContaBancaria conta : listarTodasContasBancariasRepository()){
+             if(conta.getTipoConta() == tipoConta){
+                 ContasFiltradas.add(conta);
+             }
+         }
+        return ContasFiltradas;
+    }
+   
+    public ContaBancaria filtrarContaBancariaUnitaria(String numeroConta) {
+         //Percorre-se todo o hashMap pelos values dele
+         return contasBancarias.get(numeroConta);
+    }
     
     /*
     Collection<ContaBancaria> -> É um tipo, uma interface da hierarquia de coleções do Java.

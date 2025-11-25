@@ -1,8 +1,8 @@
 package br.com.contas.exercicio_02.services;
 
-import br.com.contas.exercicio_02.Exception.ContaExistenteException;
-import br.com.contas.exercicio_02.Exception.NumeroContaVazioException;
-import br.com.contas.exercicio_02.Exception.SaldoInsuficienteException;
+import br.com.contas.exercicio_02.model.exception.ContaExistenteException;
+import br.com.contas.exercicio_02.model.exception.NumeroContaVazioException;
+import br.com.contas.exercicio_02.model.exception.SaldoInsuficienteException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.ContaCorrente;
 import br.com.contas.exercicio_02.model.classes.ContaPoupanca;

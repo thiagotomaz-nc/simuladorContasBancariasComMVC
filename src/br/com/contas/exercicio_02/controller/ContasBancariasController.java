@@ -5,19 +5,25 @@
  */
 package br.com.contas.exercicio_02.controller;
 
-import br.com.contas.exercicio_02.Exception.ContaExistenteException;
-import br.com.contas.exercicio_02.Exception.NumeroContaVazioException;
-import br.com.contas.exercicio_02.Exception.SaldoInsuficienteException;
+import br.com.contas.exercicio_02.model.exception.ContaExistenteException;
+import br.com.contas.exercicio_02.model.exception.NumeroContaVazioException;
+import br.com.contas.exercicio_02.model.exception.SaldoInsuficienteException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.ContaCorrente;
 import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
-import br.com.contas.exercicio_02.model.classes.TipoConta;
+import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
+import br.com.contas.exercicio_02.model.exception.CampoNuloVazioException;
+import br.com.contas.exercicio_02.model.exception.ListasVaziaException;
 import br.com.contas.exercicio_02.services.ContaBancariaServices;
-import br.com.contas.exercicio_02.util.Mensagens;
-import br.com.contas.exercicio_02.view.AcaoView;
+import br.com.contas.exercicio_02.model.util.Mensagens;
+import br.com.contas.exercicio_02.model.util.ValidationValores;
+import br.com.contas.exercicio_02.view.EnumAcaoView;
 import br.com.contas.exercicio_02.view.ContasBancariaEditarCadastrar;
+import br.com.contas.exercicio_02.view.TipoContaIG;
 import br.com.contas.exercicio_02.view.table.CacheContas;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
+import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -28,13 +34,14 @@ import javax.swing.JOptionPane;
  */
 //Artigo utilizado par ao padrão MVCS https://www.devmedia.com.br/padrao-mvc-java-magazine/21995
 public class ContasBancariasController {
-    
+
     private final ContaBancariaServices contaBancariaServices;
     private final CacheContas cacheContas;
     private JFrame frame;
     private ContaBancariaTableModel contaBancariaModeloTable;
     private static final Logger LOGGER = Logger.getLogger(ContasBancariasController.class.getName());
-    private AcaoView acaoView;
+    private EnumAcaoView acaoView;
+   
     // por que utilizar o static, pois sem o static teria que ter um Logger novo para cada objeto, o que não faz sentido.
     // Logger não precisa saber quantos objetos existem.
     // Ele só precisa saber qual classe está registrando mensagens.
@@ -45,7 +52,7 @@ public class ContasBancariasController {
         this.frame = parent;
         this.contaBancariaModeloTable = new ContaBancariaTableModel(cacheContas);
     }
-    
+
     public ContaBancariaTableModel getContaBancariaModeloTable() {
         return contaBancariaModeloTable;
     }
@@ -57,15 +64,15 @@ public class ContasBancariasController {
         try {
             contaBancariaServices.cadastrarConta(conta);
             Mensagens.informacao("Conta cadastrada com sucesso!\nTitular: " + conta.getNome() + "\nNúmero da Conta: " + conta.getNumeroConta());
-           atualizarCacheDeContasBancarias();
-            
+            atualizarCacheDeContasBancarias();
+
         } catch (SaldoInsuficienteException | ContaExistenteException ex) {
             Mensagens.error(ex.getMessage());
         } catch (NumeroContaVazioException ex) {
             LOGGER.info(ex.getMessage());
         }
     }
-    
+
     private void editarConta(ContaBancaria contaBancaria) {
         try {
             contaBancariaServices.editarConta(contaBancaria);
@@ -77,19 +84,19 @@ public class ContasBancariasController {
             LOGGER.info(ex.getMessage());
         }
     }
-    
+
     public void excluirContaBancaria(int linha) {
         if (linha > -1) {
             ContaBancaria contaBancariaExcluir = cacheContas.consultarConta(linha);
-            int resposta = Mensagens.confirmar("Deseja realmente excluir essa conta?\n\nNúmero: "+contaBancariaExcluir.getNumeroConta()+"\nTitular: "+contaBancariaExcluir.getNome());
-            if(resposta==JOptionPane.YES_OPTION){
+            int resposta = Mensagens.confirmar("Deseja realmente excluir essa conta?\n\nNúmero: " + contaBancariaExcluir.getNumeroConta() + "\nTitular: " + contaBancariaExcluir.getNome());
+            if (resposta == JOptionPane.YES_OPTION) {
                 if (contaBancariaServices.excluirContaBancaria(contaBancariaExcluir) == null) {
                     Mensagens.error("Conta não encontrara");
                 } else {
                     atualizarCacheDeContasBancarias();
                     Mensagens.informacao("Conta excluida com sucesso");
                 }
-            
+
             }
         }
     }
@@ -101,48 +108,50 @@ public class ContasBancariasController {
         cacheContas.atualizarCache(contaBancariaServices.listarTodasContasBancarias());
         this.contaBancariaModeloTable.fireTableDataChanged();
     }
+    
+    
 
     // --------------------------------------------
     // MÉTODO PARA JANELAS
     // No padrão MVC, o Controller é justamente o lugar onde a lógica de fluxo da aplicação deve ficar,
     // sem incluir regras de negócio pesadas (essas ficam no Service/Model).
     // --------------------------------------------
-    public void efetuarNovaContaView(TipoConta tipo) {
+    public void efetuarNovaContaView(EnumTipoConta tipo) {
         if (tipo == null) {
             return;
         }
-        acaoView = AcaoView.CADASTRAR;
+        acaoView = EnumAcaoView.CADASTRAR;
         novaContaBancariaView(tipo);
     }
-    
-    private void novaContaBancariaView(TipoConta tipo) {
-        
+
+    private void novaContaBancariaView(EnumTipoConta tipo) {
+
         ContaBancaria contaBancariaNova = tipoContaBancaria(tipo);
         String nomeAcao = getPreTituloAcaoView(acaoView);
         abrirViewContaBancariaView(nomeAcao, contaBancariaNova);
     }
-    
-    public void editarContaBancariaView(AcaoView acaoView, int linha) {
+
+    public void editarContaBancariaView(EnumAcaoView acaoView, int linha) {
         if (linha > -1) {
             this.acaoView = acaoView;
             String nomeAcao = getPreTituloAcaoView(this.acaoView);
             abrirViewContaBancariaView(nomeAcao, cacheContas.consultarConta(linha));
         }
     }
-    
+
     private void abrirViewContaBancariaView(String preTitulo, ContaBancaria conta) {
-        
+
         ContasBancariaEditarCadastrar contasBancariaEditarCadastrar = new ContasBancariaEditarCadastrar(frame, true, conta);
         contasBancariaEditarCadastrar.setTitle(preTitulo + " " + conta.getDescricaoConta());
         contasBancariaEditarCadastrar.setVisible(true);
         contasBancariaEditarCadastrar.setNomeDoBotao(preTitulo + " " + conta.getDescricaoConta());
-        
+
         getCadastrarEditarContaBancaria(contasBancariaEditarCadastrar.getContaBancaria());
-        
+
     }
-    
-    public ContaBancaria tipoContaBancaria(TipoConta tipo) {
-        
+
+    public ContaBancaria tipoContaBancaria(EnumTipoConta tipo) {
+
         switch (tipo) {
             case CONTACORRENTE:
                 return new ContaCorrente();
@@ -150,12 +159,12 @@ public class ContasBancariasController {
                 return new ContaPoupanca();
             default:
                 Mensagens.error("Conta não identificada");
-                throw new IllegalArgumentException("Conta não identificada: " + tipo);
+               return null;
         }
-        
+
     }
-    
-    public String getPreTituloAcaoView(AcaoView acaoView) {
+
+    public String getPreTituloAcaoView(EnumAcaoView acaoView) {
         switch (acaoView) {
             case CADASTRAR:
                 return "Cadastrar";
@@ -163,11 +172,11 @@ public class ContasBancariasController {
                 return "Editar";
             default:
                 Mensagens.error("Conta não identificada");
-                throw new IllegalArgumentException("Conta não identificada: " + acaoView);
+                return "";
         }
-        
+
     }
-    
+
     private void getCadastrarEditarContaBancaria(ContaBancaria contaBancaria) {
         switch (acaoView) {
             case CADASTRAR:
@@ -178,12 +187,42 @@ public class ContasBancariasController {
                 break;
             default:
                 Mensagens.error("Operação não encontrada");
-                throw new IllegalArgumentException("erro na informação");
-            
+                return;
+
         }
-        
+
+    }
+
+    public void FiltrarConta(EnumTipoConta tipoContaSelecionada) {
+        ArrayList<ContaBancaria> resultadoFiltro = new ArrayList<>(contaBancariaServices.filtrarContas(tipoContaSelecionada));
+        if(resultadoFiltro.size() >0){
+            cacheContas.atualizarCache(resultadoFiltro);
+            contaBancariaModeloTable.atualizarTabela();
+        }
+    }
+
+    public void consultarContaBancariaNumeroDaConta(String text) {
+        try {
+            ValidationValores.isNullEmpity(text.trim(), "O campo esta vazio ou incompleto!");
+            
+            ArrayList<ContaBancaria> consultaTemp = new ArrayList<>();
+            consultaTemp.add(contaBancariaServices.filtrarContaBancariaUnitaria(text));
+            cacheContas.atualizarCache(consultaTemp);
+            contaBancariaModeloTable.atualizarTabela();
+            
+            Mensagens.informacao("Conta encontrada com sucesso!");
+            
+        } catch (CampoNuloVazioException ex) {
+            Mensagens.error(ex.getMessage());
+            return;
+        } catch (ListasVaziaException ex) {
+           Mensagens.error(ex.getMessage());
+           return;
+        }
     }
     
+    
+
 }
 
 /*

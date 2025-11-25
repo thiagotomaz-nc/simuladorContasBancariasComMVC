@@ -7,18 +7,22 @@
  */
 package br.com.contas.exercicio_02.view;
 
+import br.com.contas.exercicio_02.model.exception.CampoNuloVazioException;
+import br.com.contas.exercicio_02.model.exception.CampoSizeInvalidoException;
+import br.com.contas.exercicio_02.model.exception.CaractereInvalidoEspacoBrancoException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
-import br.com.contas.exercicio_02.model.classes.ContaCorrente;
-import br.com.contas.exercicio_02.model.classes.TipoConta;
-import br.com.contas.exercicio_02.util.ConfigDefaultMoedaBR;
-import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
-import br.com.contas.exercicio_02.util.Mensagens;
+import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
+import br.com.contas.exercicio_02.model.exception.DoubleFormatClassCastException;
+import br.com.contas.exercicio_02.model.exception.NumeroFormatoException;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultMoedaBR;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
+import br.com.contas.exercicio_02.model.util.ConverterDouble;
+import br.com.contas.exercicio_02.model.util.Mensagens;
+import br.com.contas.exercicio_02.model.util.ValidationValores;
 import java.awt.Color;
-import java.awt.Toolkit;
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
@@ -46,14 +50,15 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
         //A magica do polimorfismo, funcionando corretamente, sem if's limpo e funcional;
         txtNumeroDaConta.setText(this.contaBancaria.getNumeroConta());
         txtNomeContaCorrente.setText(this.contaBancaria.getNome());
-        
+
         txtInfoAdicionalConta.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
         txtInfoAdicionalConta.setValue(this.contaBancaria.getInfoAdicionalConta());
 
         txtSaldoContaCorrente.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
         txtSaldoContaCorrente.setValue(this.contaBancaria.getSaldo());
-               
+
         txtInfoAdicionalConta.setEnabled(contaBancaria.isInfoAdicionalConta());
+        lblDescricaoInfoAdicionalCampo.setText(this.contaBancaria.getDescricaoInfoAdicionalCampo());
     }
 
     /**
@@ -67,7 +72,7 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lblDescricaoInfoAdicionalCampo = new javax.swing.JLabel();
         jblSaldo = new javax.swing.JLabel();
         txtNomeContaCorrente = new javax.swing.JTextField();
         btnSalvarEditar = new javax.swing.JButton();
@@ -93,9 +98,9 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Limite Conta Corrente [R$]:");
+        lblDescricaoInfoAdicionalCampo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblDescricaoInfoAdicionalCampo.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblDescricaoInfoAdicionalCampo.setText("Limite Conta Corrente [R$]:");
 
         jblSaldo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jblSaldo.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -161,7 +166,7 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
                         .addComponent(btnSalvarEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                            .addComponent(lblDescricaoInfoAdicionalCampo, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jLabel3))
@@ -197,7 +202,7 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
                     .addComponent(txtSaldoContaCorrente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
+                    .addComponent(lblDescricaoInfoAdicionalCampo)
                     .addComponent(txtInfoAdicionalConta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -234,34 +239,42 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
         a janela ainda está aberta, e o usuário deve corrigir as informções.   
          */
         btnSalvarEditar.hasFocus();
-
-        if (!txtNumeroDaConta.getText().trim().toUpperCase().isEmpty() && !txtNomeContaCorrente.getText().trim().toUpperCase().isEmpty() && !txtSaldoContaCorrente.getText().trim().isEmpty() && !txtInfoAdicionalConta.getText().trim().toUpperCase().isEmpty()) {
+        double saldo, valorInfoAdicional;
+        try {
+            //validar campos vazios ou nullos
+            ValidationValores.isNullEmpity(txtNumeroDaConta.getText().trim(), "O Campo [ número da conta ] da conta não esta preenchido");
+            ValidationValores.isNullEmpity(txtNomeContaCorrente.getText().trim(), "O Campo [ nome ] da conta não esta preenchido");
+            ValidationValores.isNullEmpity(txtSaldoContaCorrente.getText().trim(), "O Campo [ saldo ] da conta não esta preenchido");
+            ValidationValores.isNullEmpity(txtInfoAdicionalConta.getText().trim(), "O Campo [ Informa~ ] da conta não esta preenchido");
+            //Verificar se o campo não aceite caracteres vazios entre os números
+            ValidationValores.caractereInvalidoEspacoBranco(txtNumeroDaConta.getText());
+            //validar campo numero da conta para que ele tenho os 8 caracteres
+            ValidationValores.validarTamanho(txtNumeroDaConta.getText(), EnumValidacaoCampos.NUMERO_CONTA);
+            //converter os valores do campo saldo e valor adicional para doubles
+            saldo = ConverterDouble.converterObjectToDouble(txtSaldoContaCorrente.getValue());
+            valorInfoAdicional = contaBancaria.isInfoAdicionalConta() ? ConverterDouble.converterObjectToDouble(txtInfoAdicionalConta.getValue()) : 0;
             
-            if (txtNumeroDaConta.getText().trim().length() == 8) {
-                 
-                //implementar o NumberFormat para trabalhar com moedas
-                Number saldoTemp = (Number) txtSaldoContaCorrente.getValue();
-                double saldo = saldoTemp != null ? saldoTemp.doubleValue() : 0;
-                Number valorInfoAdicionalTemp = (Number) txtInfoAdicionalConta.getValue();
-                double valorInfoAdicional = contaBancaria.isInfoAdicionalConta() ? valorInfoAdicionalTemp.doubleValue():0;
-                
-                // Correção caso o usuario digite -0, por acidente ou para testar o simulador
-                // Esse caso ocorreu comigo e pesquisando descrobri essa tecnica
-                contaBancaria.setNumeroConta(txtNumeroDaConta.getText().trim());
-                contaBancaria.setNome(txtNomeContaCorrente.getText().trim().toUpperCase());
-                contaBancaria.setSaldo(saldo);
-                contaBancaria.setInfoAdicionalConta(valorInfoAdicional);
-               
-                dispose();
-                
-
-            } else {
-                Mensagens.error("O campo numero da conta tem que estar completamente preenchido");
-                txtNumeroDaConta.setBorder(new LineBorder(Color.RED, 2));
-            }
-        } else {
-            Mensagens.error("Por favor, preencha todos os campos da sua conta!");
+        } catch (CampoNuloVazioException | CaractereInvalidoEspacoBrancoException | DoubleFormatClassCastException  ex) {
+            Mensagens.error(ex.getMessage());
+            return;
+        } catch (CampoSizeInvalidoException ex) {
+            Mensagens.error(ex.getMessage());
+            txtNumeroDaConta.setBorder(new LineBorder(Color.RED, 2));
+            return;//aqui se interrompe o fluxo
         }
+        //implementar o NumberFormat para trabalhar com moedas
+
+        
+
+        // Correção caso o usuario digite -0, por acidente ou para testar o simulador
+        // Esse caso ocorreu comigo e pesquisando descrobri essa tecnica
+        contaBancaria.setNumeroConta(txtNumeroDaConta.getText().trim());
+        contaBancaria.setNome(txtNomeContaCorrente.getText().trim().toUpperCase());
+        contaBancaria.setSaldo(saldo);
+        contaBancaria.setInfoAdicionalConta(valorInfoAdicional);
+
+        dispose();
+
     }//GEN-LAST:event_btnSalvarEditarActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -269,7 +282,7 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jLabel1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jLabel1AncestorAdded
-      
+
     }//GEN-LAST:event_jLabel1AncestorAdded
 
     /**
@@ -279,28 +292,26 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
     private javax.swing.JButton btnSalvarEditar;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jblSaldo;
+    private javax.swing.JLabel lblDescricaoInfoAdicionalCampo;
     private javax.swing.JFormattedTextField txtInfoAdicionalConta;
     private javax.swing.JTextField txtNomeContaCorrente;
     private javax.swing.JFormattedTextField txtNumeroDaConta;
     private javax.swing.JFormattedTextField txtSaldoContaCorrente;
     // End of variables declaration//GEN-END:variables
 
-  public ContaBancaria getContaBancaria(){
-      return contaBancaria;
-  }
-
-
+    public ContaBancaria getContaBancaria() {
+        return contaBancaria;
+    }
 
     private void fecharView() {
         dispose();
     }
 
     public void setNomeDoBotao(String string) {
-      btnSalvarEditar.setText(string);
+        btnSalvarEditar.setText(string);
     }
 }

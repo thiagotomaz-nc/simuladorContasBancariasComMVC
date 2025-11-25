@@ -6,7 +6,7 @@
 package br.com.contas.exercicio_02.view.table;
 
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
-import br.com.contas.exercicio_02.util.ConfigDefaultMoedaBR;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultMoedaBR;
 import javax.swing.table.AbstractTableModel;
 
 /**

@@ -28,8 +28,8 @@ public class ContaPoupanca extends ContaBancaria {
     }
 
     @Override
-    public TipoConta getTipoConta() {
-        return TipoConta.CONTAPOUPANCA;
+    public EnumTipoConta getTipoConta() {
+        return EnumTipoConta.CONTAPOUPANCA;
     }
 
     @Override
@@ -40,6 +40,11 @@ public class ContaPoupanca extends ContaBancaria {
     @Override
     public void setInfoAdicionalConta(double valor) {
         saldoPoupanca=valor;
+    }
+
+    @Override
+    public String getDescricaoInfoAdicionalCampo() {
+      return "Saldo da Poupança [R$]:";
     }
 
  

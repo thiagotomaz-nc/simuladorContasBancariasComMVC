@@ -1,12 +1,15 @@
 package br.com.contas.exercicio_02.services;
 
-import br.com.contas.exercicio_02.Exception.ContaExistenteException;
-import br.com.contas.exercicio_02.Exception.NumeroContaVazioException;
-import br.com.contas.exercicio_02.Exception.SaldoInsuficienteException;
+import br.com.contas.exercicio_02.model.exception.ContaExistenteException;
+import br.com.contas.exercicio_02.model.exception.NumeroContaVazioException;
+import br.com.contas.exercicio_02.model.exception.SaldoInsuficienteException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.ContaCorrente;
 import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
+import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
+import br.com.contas.exercicio_02.model.exception.ListasVaziaException;
 import br.com.contas.exercicio_02.repository.ContaBancariaRepositorio;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.swing.JOptionPane;
 
@@ -179,8 +182,8 @@ public class ContaBancariaServices {
 
         return contaBancariasBancariaRepositorio.atualizarConta(contaBancaria);
     }
-    
-    public ContaBancaria excluirContaBancaria(ContaBancaria conta){
+
+    public ContaBancaria excluirContaBancaria(ContaBancaria conta) {
         return contaBancariasBancariaRepositorio.excluirContaBancaria(conta);
     }
 
@@ -203,6 +206,22 @@ public class ContaBancariaServices {
         if (numeroConta == null) {
             throw new NumeroContaVazioException();
         }
+    }
+
+    public Collection<ContaBancaria> filtrarContas(EnumTipoConta tipoContaSelecionada) {
+        if (tipoContaSelecionada == tipoContaSelecionada.BANCARIA) {
+            return contaBancariasBancariaRepositorio.listarTodasContasBancariasRepository();
+        }
+        return contaBancariasBancariaRepositorio.filtrarContaBancaria(tipoContaSelecionada);
+    }
+
+    public ContaBancaria filtrarContaBancariaUnitaria(String text) throws ListasVaziaException {
+        ContaBancaria contaBancaria = contaBancariasBancariaRepositorio.filtrarContaBancariaUnitaria(text);
+
+        if (contaBancaria == null) {
+            throw new ListasVaziaException("Nenhuma conta encontrada");
+        }
+        return contaBancaria;
     }
 }
 

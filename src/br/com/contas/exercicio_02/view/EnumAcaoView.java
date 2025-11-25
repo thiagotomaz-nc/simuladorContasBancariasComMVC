@@ -9,6 +9,6 @@ package br.com.contas.exercicio_02.view;
  *
  * @author Thiago Tomaz
  */
-public enum AcaoView {
+public enum EnumAcaoView {
     CADASTRAR, EDITAR
 }

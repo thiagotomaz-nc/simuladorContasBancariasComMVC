@@ -5,10 +5,12 @@
         <group>
             <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/controller/ContasBancariasController.java</file>
             <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/services/ContaBancariaServices.java</file>
+            <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/repository/ContaBancariaRepositorio.java</file>
             <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/view/table/CacheContas.java</file>
+            <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/model/classes/EnumTipoConta.java</file>
             <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/main/SimuladorDeContasBancariasPrincipalMain.java</file>
-            <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/view/table/ContaBancariaTableModel.java</file>
-            <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/view/ContasBancariaEditarCadastrar.java</file>
+            <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/model/exception/ListasVaziaException.java</file>
+            <file>file:/D:/THIAGO%20CURSOS/1_IFRN_TADS/1_TADS/2_SEMESTRE/1_POO/1_ETAPA/CODIGOS_POO/SimuladorContasBancarias/src/br/com/contas/exercicio_02/model/exception/CampoNuloVazioException.java</file>
         </group>
     </open-files>
 </project-private>

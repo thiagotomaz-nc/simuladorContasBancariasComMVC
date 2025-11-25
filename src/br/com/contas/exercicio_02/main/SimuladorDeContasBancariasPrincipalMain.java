@@ -8,10 +8,15 @@
 package br.com.contas.exercicio_02.main;
 
 import br.com.contas.exercicio_02.controller.ContasBancariasController;
+import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
+import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
+import br.com.contas.exercicio_02.model.exception.CampoNuloVazioException;
 import br.com.contas.exercicio_02.services.ContaBancariaServices;
 import br.com.contas.exercicio_02.services.OperacoesBancarias;
-import br.com.contas.exercicio_02.util.ConfigDefaultSistema;
-import br.com.contas.exercicio_02.view.AcaoView;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
+import br.com.contas.exercicio_02.model.util.Mensagens;
+import br.com.contas.exercicio_02.model.util.ValidationValores;
+import br.com.contas.exercicio_02.view.EnumAcaoView;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
 import br.com.contas.exercicio_02.view.TipoContaIG;
 import br.com.contas.exercicio_02.view.table.CacheContas;
@@ -19,6 +24,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.Timer;
 import javax.swing.table.TableColumnModel;
 
@@ -71,6 +80,9 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         dataLocal = LocalDateTime.now();
         atualizarDataHora(dataLocal);
         startRelogio();
+        
+        //Interligando o enum com o JCombobox
+         cbxTiposContas.setModel(new DefaultComboBoxModel<>(EnumTipoConta.values()));
 
     }
 
@@ -95,11 +107,11 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         btnPesquisar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         DivisorLabel = new javax.swing.JLabel();
-        numeroDaConta = new javax.swing.JFormattedTextField();
+        txtNumeroDaConta = new javax.swing.JFormattedTextField();
         lgdContasTipos = new javax.swing.JLabel();
         lgdCountContas = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        cbxTiposContas = new javax.swing.JComboBox<>();
+        cbxTiposContas = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -209,11 +221,11 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         DivisorLabel.setOpaque(true);
 
         try {
-            numeroDaConta.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("######-#")));
+            txtNumeroDaConta.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("######-#")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
-        numeroDaConta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtNumeroDaConta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         lgdContasTipos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lgdContasTipos.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -231,7 +243,11 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         });
 
         cbxTiposContas.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        cbxTiposContas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-", "Conta Poupança", "Conta Corrente" }));
+        cbxTiposContas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxTiposContasActionPerformed(evt);
+            }
+        });
 
         jLabel4.setBackground(new java.awt.Color(200, 200, 200));
         jLabel4.setOpaque(true);
@@ -253,7 +269,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(numeroDaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNumeroDaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -272,18 +288,18 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cbxTiposContas, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel5))
                     .addComponent(lgdContasTipos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lgdCountContas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(cbxTiposContas, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel5))
                             .addComponent(DivisorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(btnPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(numeroDaConta))
+                                .addComponent(txtNumeroDaConta))
                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -650,7 +666,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }//GEN-LAST:event_btnAdicionarContaActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
-
+        contasBancariasController.consultarContaBancariaNumeroDaConta(txtNumeroDaConta.getText());
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnExcluirContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirContaActionPerformed
@@ -660,7 +676,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
 
     private void btnEditarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarContaActionPerformed
        
-        contasBancariasController.editarContaBancariaView(AcaoView.EDITAR, tabelaContabancaria.getSelectedRow());
+        contasBancariasController.editarContaBancariaView(EnumAcaoView.EDITAR, tabelaContabancaria.getSelectedRow());
         
     }//GEN-LAST:event_btnEditarContaActionPerformed
 
@@ -691,6 +707,10 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private void jMenu3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenu3ActionPerformed
+
+    private void cbxTiposContasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxTiposContasActionPerformed
+        contasBancariasController.FiltrarConta((EnumTipoConta) cbxTiposContas.getSelectedItem());
+    }//GEN-LAST:event_cbxTiposContasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -744,7 +764,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JButton btnExcluirConta;
     private javax.swing.JButton btnPesquisar;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JComboBox<String> cbxTiposContas;
+    private javax.swing.JComboBox cbxTiposContas;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -782,10 +802,10 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JMenuItem mnTransferenciaEntreCorrentes;
     private javax.swing.JMenuItem mnTransferenciaEntrePoupancas;
     private javax.swing.JMenuItem mnTransferenciaPoupancaCorrente;
-    private javax.swing.JFormattedTextField numeroDaConta;
     private javax.swing.JPanel painelContasBancarias;
     private javax.swing.JScrollPane scrollContaPoupanca;
     private javax.swing.JTable tabelaContabancaria;
+    private javax.swing.JFormattedTextField txtNumeroDaConta;
     // End of variables declaration//GEN-END:variables
 
     private void limparSelecaoTabelas() {

@@ -3,15 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.contas.exercicio_02.util;
+package br.com.contas.exercicio_02.model.util;
 
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import javax.swing.JDialog;
 
 /**
  *
@@ -38,7 +34,7 @@ public class ConfigDefaultMoedaBR {
         return new BigDecimal(valor).setScale(2,RoundingMode.HALF_UP).doubleValue();
     }
     
-     public static DecimalFormat moeda_default_br( ) {
+    public static DecimalFormat moeda_default_br( ) {
       // o DecimalFormat é um subclasse do NumberFormat,
         return  new DecimalFormat("#,##0.00");
     }

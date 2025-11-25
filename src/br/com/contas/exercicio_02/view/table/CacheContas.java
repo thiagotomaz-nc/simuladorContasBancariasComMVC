@@ -19,16 +19,12 @@ import javax.swing.JTable;
     Não participa do domínio, nem do serviço, nem do repositório.
 */
 public class CacheContas {
-        private final ArrayList<ContaBancaria> cacheContas  = new ArrayList<>();
-        
-    
-
        
-        
-   
+    private final ArrayList<ContaBancaria> cacheContasLista  = new ArrayList<>();
+       
     public void atualizarCache(Collection<ContaBancaria> dadosContaBancaria) {
-        this.cacheContas.clear();
-        this.cacheContas.addAll(dadosContaBancaria);
+        this.cacheContasLista.clear();
+        this.cacheContasLista.addAll(dadosContaBancaria);
        
         /*
         * Vantagens dessa implementação
@@ -55,13 +51,16 @@ public class CacheContas {
        }
     
     public ContaBancaria consultarConta(int indice){
-        return cacheContas.get(indice);    
+        return cacheContasLista.get(indice);    
     }
     
     public int sizeCache(){
-        return cacheContas.size();
+        return cacheContasLista.size();
     }
     
+    public ArrayList<ContaBancaria> getCacheContasBancarias(){
+        return cacheContasLista;
+    }
     
         
         

@@ -10,15 +10,16 @@ package br.com.contas.exercicio_02.main;
 import br.com.contas.exercicio_02.controller.ContasBancariasController;
 import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
 import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
-import br.com.contas.exercicio_02.model.exception.CampoNuloVazioException;
+import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
 import br.com.contas.exercicio_02.services.ContaBancariaServices;
-import br.com.contas.exercicio_02.services.OperacoesBancarias;
+import br.com.contas.exercicio_02.services.OperacoesBancariasServices;
 import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
 import br.com.contas.exercicio_02.model.util.Mensagens;
-import br.com.contas.exercicio_02.model.util.ValidationValores;
+import br.com.contas.exercicio_02.model.util.ValidarValores;
 import br.com.contas.exercicio_02.view.EnumAcaoView;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
 import br.com.contas.exercicio_02.view.TipoContaIG;
+import br.com.contas.exercicio_02.model.classes.EnumTipoOperacoes;
 import br.com.contas.exercicio_02.view.table.CacheContas;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -103,6 +104,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         btnEditarConta = new javax.swing.JButton();
         btnExcluirConta = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         btnPesquisar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -204,6 +206,17 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         jLabel2.setText("l");
         jLabel2.setOpaque(true);
         jToolBar1.add(jLabel2);
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icones_32/history.png"))); // NOI18N
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton2);
 
         jPanel1.setMinimumSize(new java.awt.Dimension(100, 40));
 
@@ -351,7 +364,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
                 .addComponent(lgdLaranja, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lgdaranjaTexto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 180, Short.MAX_VALUE)
                 .addComponent(lgdHorario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lgdDataHora, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -417,7 +430,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         );
         painelContasBancariasLayout.setVerticalGroup(
             painelContasBancariasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scrollContaPoupanca, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+            .addComponent(scrollContaPoupanca, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
         );
 
         jMenuBar1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -634,7 +647,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-
+        contasBancariasController.abrirViewRealizarOperacoesDebitoCredito(EnumTipoOperacoes.CREDITAR, jMenuItem8.getText());
         limparSelecaoTabelas();
             }//GEN-LAST:event_jMenuItem8ActionPerformed
 
@@ -666,7 +679,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     }//GEN-LAST:event_btnAdicionarContaActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
-        contasBancariasController.consultarContaBancariaNumeroDaConta(txtNumeroDaConta.getText());
+        contasBancariasController.consultarContaBancariaNumeroDaContaViewPrincipal(txtNumeroDaConta.getText());
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnExcluirContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirContaActionPerformed
@@ -711,6 +724,10 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private void cbxTiposContasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxTiposContasActionPerformed
         contasBancariasController.FiltrarConta((EnumTipoConta) cbxTiposContas.getSelectedItem());
     }//GEN-LAST:event_cbxTiposContasActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+      contasBancariasController.abrirOperacoesBancariasView();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -766,6 +783,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox cbxTiposContas;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

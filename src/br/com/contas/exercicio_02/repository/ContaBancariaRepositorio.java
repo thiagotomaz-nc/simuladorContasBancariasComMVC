@@ -64,7 +64,7 @@ public class ContaBancariaRepositorio {
     }
     
     public Collection<ContaBancaria> listarTodasContasBancariasRepository() {
-        return contasBancarias.values();
+        return Collections.unmodifiableCollection(contasBancarias.values());
     }
     
     public Collection<ContaBancaria> filtrarContaBancaria(EnumTipoConta tipoConta) {
@@ -76,7 +76,7 @@ public class ContaBancariaRepositorio {
                  ContasFiltradas.add(conta);
              }
          }
-        return ContasFiltradas;
+        return Collections.unmodifiableCollection(ContasFiltradas);
     }
    
     public ContaBancaria filtrarContaBancariaUnitaria(String numeroConta) {

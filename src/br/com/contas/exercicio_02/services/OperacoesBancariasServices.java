@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 
 //Artigo utilizado par ao padrão MVCS https://www.devmedia.com.br/padrao-mvc-java-magazine/21995
 
-public class OperacoesBancarias {
+public class OperacoesBancariasServices {
 
     private ContaBancariaRepositorio contaBancariasBancariaRepositorio = new ContaBancariaRepositorio();
 
@@ -24,7 +24,6 @@ public class OperacoesBancarias {
         } else {
             JOptionPane.showMessageDialog(null, "O valor não pode ser negativo");
         }
-
     }
 
     public void creditarContaPoupanca(ContaPoupanca contaPoupanca, double novoValor) {

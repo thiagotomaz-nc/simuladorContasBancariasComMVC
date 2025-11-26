@@ -9,16 +9,17 @@ package br.com.contas.exercicio_02.model.exception;
  *
  * @author Thiago Tomaz
  */
-public class CampoNuloVazioException extends Exception {
+public class NuloVazioInesxistenteException extends Exception {
 
-    public CampoNuloVazioException() {
+    public NuloVazioInesxistenteException() {
+        
     }
 
-    public CampoNuloVazioException(String string) {
+    public NuloVazioInesxistenteException(String string) {
         super(string);
     }
 
-    public CampoNuloVazioException(String string, Throwable thrwbl) {
+    public NuloVazioInesxistenteException(String string, Throwable thrwbl) {
         super(string, thrwbl);
     }
 

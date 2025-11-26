@@ -7,7 +7,7 @@
  */
 package br.com.contas.exercicio_02.view;
 
-import br.com.contas.exercicio_02.model.exception.CampoNuloVazioException;
+import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
 import br.com.contas.exercicio_02.model.exception.CampoSizeInvalidoException;
 import br.com.contas.exercicio_02.model.exception.CaractereInvalidoEspacoBrancoException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
@@ -18,7 +18,7 @@ import br.com.contas.exercicio_02.model.util.ConfigDefaultMoedaBR;
 import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
 import br.com.contas.exercicio_02.model.util.ConverterDouble;
 import br.com.contas.exercicio_02.model.util.Mensagens;
-import br.com.contas.exercicio_02.model.util.ValidationValores;
+import br.com.contas.exercicio_02.model.util.ValidarValores;
 import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -242,19 +242,19 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
         double saldo, valorInfoAdicional;
         try {
             //validar campos vazios ou nullos
-            ValidationValores.isNullEmpity(txtNumeroDaConta.getText().trim(), "O Campo [ número da conta ] da conta não esta preenchido");
-            ValidationValores.isNullEmpity(txtNomeContaCorrente.getText().trim(), "O Campo [ nome ] da conta não esta preenchido");
-            ValidationValores.isNullEmpity(txtSaldoContaCorrente.getText().trim(), "O Campo [ saldo ] da conta não esta preenchido");
-            ValidationValores.isNullEmpity(txtInfoAdicionalConta.getText().trim(), "O Campo [ Informa~ ] da conta não esta preenchido");
+            ValidarValores.isNullEmpity(txtNumeroDaConta.getText().trim(), "O Campo [ número da conta ] da conta não esta preenchido");
+            ValidarValores.isNullEmpity(txtNomeContaCorrente.getText().trim(), "O Campo [ nome ] da conta não esta preenchido");
+            ValidarValores.isNullEmpity(txtSaldoContaCorrente.getText().trim(), "O Campo [ saldo ] da conta não esta preenchido");
+            ValidarValores.isNullEmpity(txtInfoAdicionalConta.getText().trim(), "O Campo [ Informa~ ] da conta não esta preenchido");
             //Verificar se o campo não aceite caracteres vazios entre os números
-            ValidationValores.caractereInvalidoEspacoBranco(txtNumeroDaConta.getText());
+            ValidarValores.caractereInvalidoEspacoBranco(txtNumeroDaConta.getText());
             //validar campo numero da conta para que ele tenho os 8 caracteres
-            ValidationValores.validarTamanho(txtNumeroDaConta.getText(), EnumValidacaoCampos.NUMERO_CONTA);
+            ValidarValores.validarTamanho(txtNumeroDaConta.getText(), EnumValidacaoCampos.NUMERO_CONTA);
             //converter os valores do campo saldo e valor adicional para doubles
             saldo = ConverterDouble.converterObjectToDouble(txtSaldoContaCorrente.getValue());
             valorInfoAdicional = contaBancaria.isInfoAdicionalConta() ? ConverterDouble.converterObjectToDouble(txtInfoAdicionalConta.getValue()) : 0;
             
-        } catch (CampoNuloVazioException | CaractereInvalidoEspacoBrancoException | DoubleFormatClassCastException  ex) {
+        } catch (NuloVazioInesxistenteException | CaractereInvalidoEspacoBrancoException | DoubleFormatClassCastException  ex) {
             Mensagens.error(ex.getMessage());
             return;
         } catch (CampoSizeInvalidoException ex) {

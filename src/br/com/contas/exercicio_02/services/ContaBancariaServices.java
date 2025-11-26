@@ -1,184 +1,60 @@
 package br.com.contas.exercicio_02.services;
 
 import br.com.contas.exercicio_02.model.exception.ContaExistenteException;
-import br.com.contas.exercicio_02.model.exception.NumeroContaVazioException;
 import br.com.contas.exercicio_02.model.exception.SaldoInsuficienteException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
-import br.com.contas.exercicio_02.model.classes.ContaCorrente;
-import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
 import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
+import br.com.contas.exercicio_02.model.classes.EnumTipoOperacoes;
+import br.com.contas.exercicio_02.model.classes.OperacoesBancarias;
+import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
+
 import br.com.contas.exercicio_02.model.exception.ListasVaziaException;
+import br.com.contas.exercicio_02.model.util.Mensagens;
+import br.com.contas.exercicio_02.model.util.ValidarValores;
 import br.com.contas.exercicio_02.repository.ContaBancariaRepositorio;
-import java.util.ArrayList;
+import br.com.contas.exercicio_02.repository.OperacoesBancariasRepositorio;
 import java.util.Collection;
-import javax.swing.JOptionPane;
 
 //Artigo utilizado par ao padrão MVCS https://www.devmedia.com.br/padrao-mvc-java-magazine/21995
 public class ContaBancariaServices {
 
-    private ContaBancariaRepositorio contaBancariasBancariaRepositorio = new ContaBancariaRepositorio();
+    private ContaBancariaRepositorio contaBancariasBancariaRepositorio;
+    private OperacoesBancariasRepositorio operacoesBancariasRepositorio;
 
-    public void creditarContaCorrente(ContaCorrente contaCorrente, double novoValor) {
-        if (novoValor >= 0) {
-            contaCorrente.crediditar(novoValor);
-            JOptionPane.showMessageDialog(null, "Depósito na conta corrente realizado com sucesso\n\nTitular da conta: [ " + contaCorrente.getNome() + " ] \nNúmero da conta: [ " + contaCorrente.getNumeroConta() + " ]");
-        } else {
-            JOptionPane.showMessageDialog(null, "O valor não pode ser negativo");
-        }
-
-    }
-
-    public void creditarContaPoupanca(ContaPoupanca contaPoupanca, double novoValor) {
-        if (novoValor >= 0) {
-            contaPoupanca.crediditar(novoValor);
-            JOptionPane.showMessageDialog(null, "Depósito na conta poupança realizado com sucesso!\n\nTitular da conta: [ " + contaPoupanca.getNome() + " ]\nNúmero da conta: [" + contaPoupanca.getNumeroConta() + " ]");
-        } else {
-            // System.out.println("O valor não pode ser negativo");
-            JOptionPane.showMessageDialog(null, "O valor não pode ser negativo");
-        }
-    }
-
-    public void creditarEmPoupanca(ContaPoupanca contaPoupanca, double novoValor) {
-        if (verificarSaldoSuficiente(contaPoupanca, novoValor)) {
-            contaPoupanca.debitar(novoValor);
-            contaPoupanca.setSaldoPoupanca(contaPoupanca.getSaldoPoupanca() + novoValor); // verificar depois
-            JOptionPane.showMessageDialog(null, "Operação de débito do saldo da conta para crédito saldo da poupança realizada com sucesso!\nTitular da conta: [ " + contaPoupanca.getNome() + " ] \nNúmero da conta: [" + contaPoupanca.getNumeroConta() + " ]");
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo da conta insuficiente!\n\nNúmero da conta: [" + contaPoupanca.getNumeroConta() + " ]\nSaldo nesta conta na poupança: " + contaPoupanca.getSaldo());
-        }
-    }
-
-    public boolean verificarSaldoSuficiente(ContaCorrente contaCorrente, double valor) {
-
-        if (contaCorrente.mostraSaldoTotal() >= valor) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean verificarSaldoSuficiente(ContaPoupanca contaPoupanca, double valor) {
-        if (contaPoupanca.getSaldo() >= valor) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void debitarContaCorrente(ContaCorrente contaCorrente, double valorDebito) {
-        if (verificarSaldoSuficiente(contaCorrente, valorDebito)) {
-            contaCorrente.debitar(valorDebito);
-            JOptionPane.showMessageDialog(null, "Débito realizado com sucesso\nTitular: " + contaCorrente.getNome() + "\nNúmero da conta: [ " + contaCorrente.getNumeroConta() + " ]");
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo insificiente para debitar na conta corrente.");
-        }
-    }
-
-    public void debitarContaPoupanca(ContaPoupanca contaPoupanca, double valorDebito) {
-
-        if (verificarSaldoSuficiente(contaPoupanca, valorDebito)) {
-            contaPoupanca.debitar(valorDebito);
-            JOptionPane.showMessageDialog(null, "Débito realizado na conta poupança com sucesso\nTitular: " + contaPoupanca.getNome() + "\nNúmero da conta: [" + contaPoupanca.getNumeroConta() + " ]");
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo insificiente para debitar conta poupança.");
-        }
-    }
-
-    public void debitarDaPoupanca(ContaPoupanca contaPoupanca, double valorDebito) {
-        if (vericarSaldoPoupancaSuficiente(contaPoupanca.getSaldoPoupanca(), valorDebito)) {
-            double somaDebito = contaPoupanca.getSaldoPoupanca() - valorDebito;
-
-            contaPoupanca.setSaldoPoupanca(somaDebito);
-            contaPoupanca.crediditar(valorDebito);
-            JOptionPane.showMessageDialog(null, "Operação de débito saldo da poupança  para crédito saldo da conta realizada com sucesso!\nTitular da conta: [ " + contaPoupanca.getNome() + " ] \nNúmero da conta: [" + contaPoupanca.getNumeroConta() + " ]");
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo da poupança insificiente para debitar conta poupança!\nSaldo poupança: " + contaPoupanca.getSaldoPoupanca());
-
-        }
-    }
-
-    public boolean vericarSaldoPoupancaSuficiente(double saldPoupanca, double valor) {
-        if (saldPoupanca >= valor) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void transferenciaBancaria(ContaCorrente contaOrigem, ContaCorrente contaDestino, double valor) {
-        if (verificarSaldoSuficiente(contaOrigem, valor)) {
-            contaOrigem.debitar(valor);
-            contaDestino.crediditar(valor);
-            JOptionPane.showMessageDialog(null, "Transferência realizada com sucesso\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nConta Destino: [ " + contaDestino.getNumeroConta() + " ]\nValor Transferido: " + valor);
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo insuficiente para realizar a transferência!\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nSaldo total: " + contaOrigem.getSaldo());
-        }
-    }
-
-    public void transferenciaCorrenteParaPoupanca(ContaCorrente contaOrigem, ContaPoupanca contaDestino, double valor) {
-        if (verificarSaldoSuficiente(contaOrigem, valor)) {
-            contaOrigem.debitar(valor);
-            contaDestino.crediditar(valor);
-            JOptionPane.showMessageDialog(null, "Transferência realizada com sucesso\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nConta Destino: [ " + contaDestino.getNumeroConta() + " ]\nValor Transferido: " + valor);
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo insuficiente para realizar a transferência!\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nSaldo total: " + contaOrigem.getSaldo());
-
-        }
-    }
-
-    public void transferenciaPoupancaParaCorrente(ContaPoupanca contaOrigem, ContaCorrente contaDestino, double valor) {
-        if (verificarSaldoSuficiente(contaOrigem, valor)) {
-            contaOrigem.debitar(valor);
-            contaDestino.crediditar(valor);
-            JOptionPane.showMessageDialog(null, "Transferência realizada com sucesso\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nConta Destino: [ " + contaDestino.getNumeroConta() + " ]\nValor Transferido: " + valor);
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo insuficiente para realizar a transferência!\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nSaldo total: " + contaOrigem.getSaldo());
-
-        }
-    }
-
-    public void transferenciaPoupancaParaPoupanca(ContaPoupanca contaOrigem, ContaPoupanca contaDestino, double valor) {
-        if (verificarSaldoSuficiente(contaOrigem, valor)) {
-            contaOrigem.debitar(valor);
-            contaDestino.crediditar(valor);
-            JOptionPane.showMessageDialog(null, "Transferência realizada com sucesso\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nConta Destino: [ " + contaDestino.getNumeroConta() + " ]\nValor Transferido: " + valor);
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Saldo insuficiente para realizar a transferência!\n\nConta Origem: [ " + contaOrigem.getNumeroConta() + " ]\nSaldo total: " + contaOrigem.getSaldo());
-
-        }
+    public ContaBancariaServices() {
+        this.contaBancariasBancariaRepositorio = new ContaBancariaRepositorio();
+        this.operacoesBancariasRepositorio = new OperacoesBancariasRepositorio();
     }
 
     //=============================================
-    //*** Regras para poder cadastrar no repositorio***
+    //*** Regras realizar as operações***
+    //=============================================
+    //=============================================
+    //*** Regras o repositorio***
     //=============================================
     public Collection<ContaBancaria> listarTodasContasBancarias() {
         return contaBancariasBancariaRepositorio.listarTodasContasBancariasRepository();
     }
 
-    public ContaBancaria cadastrarConta(ContaBancaria conta) throws ContaExistenteException, NumeroContaVazioException, SaldoInsuficienteException {
+    public ContaBancaria cadastrarConta(ContaBancaria conta) throws ContaExistenteException, SaldoInsuficienteException, NuloVazioInesxistenteException {
         //saldo não pode ser negativo
         //caso eles sejam utilizados novamente, transformar em metodos da classe services
+        if (conta == null || conta.getNumeroConta() == null) {
+            throw new NuloVazioInesxistenteException();
+        }
 
-        saldoSuficiente(conta.getSaldo());
-        saldoSuficiente(conta.getInfoAdicionalConta());
-        isNumeroContaVazia(conta.getNumeroConta());
+        saldoPositivo(conta.getSaldo());
+        saldoPositivo(conta.getInfoAdicionalConta());
 
         consultarContaExistente(conta.getNumeroConta());
 
         return contaBancariasBancariaRepositorio.cadastrarConta(conta);
     }
 
-    public ContaBancaria editarConta(ContaBancaria contaBancaria) throws SaldoInsuficienteException, NumeroContaVazioException {
-        saldoSuficiente(contaBancaria.getSaldo());
-        saldoSuficiente(contaBancaria.getInfoAdicionalConta());
-        isNumeroContaVazia(contaBancaria.getNumeroConta());
+    public ContaBancaria editarConta(ContaBancaria contaBancaria) throws SaldoInsuficienteException, NuloVazioInesxistenteException {
+        saldoPositivo(contaBancaria.getSaldo());
+        saldoPositivo(contaBancaria.getInfoAdicionalConta());
+        ValidarValores.isNullEmpity(contaBancaria.getNumeroConta(), "Número da conta vazia!");
 
         return contaBancariasBancariaRepositorio.atualizarConta(contaBancaria);
     }
@@ -190,7 +66,7 @@ public class ContaBancariaServices {
     //=============================================
     //*** Regras em metodos para serem reaproveitados***
     //=============================================
-    public void saldoSuficiente(double valor) throws SaldoInsuficienteException {
+    public void saldoPositivo(double valor) throws SaldoInsuficienteException {
         if (valor < 0) {
             throw new SaldoInsuficienteException("Saldo(s) insuficiente para cadastrar a conta\nTente novamente!");
         }
@@ -199,12 +75,6 @@ public class ContaBancariaServices {
     public void consultarContaExistente(String numeroDaConta) throws ContaExistenteException {
         if (contaBancariasBancariaRepositorio.consultarContaExistente(numeroDaConta.trim())) {
             throw new ContaExistenteException("Número da conta indisponivel");
-        }
-    }
-
-    private void isNumeroContaVazia(String numeroConta) throws NumeroContaVazioException {
-        if (numeroConta == null) {
-            throw new NumeroContaVazioException();
         }
     }
 
@@ -223,6 +93,54 @@ public class ContaBancariaServices {
         }
         return contaBancaria;
     }
+
+    public void cadastrarOperacaoBancariaDebitoCredito(OperacoesBancarias op, EnumTipoOperacoes tipoOperacoes) throws NuloVazioInesxistenteException, SaldoInsuficienteException, ContaExistenteException {
+        if (op == null) {
+            throw new NuloVazioInesxistenteException();
+        }
+        saldoPositivo(op.getValorTransferido());
+              
+        ContaBancaria cb = contaBancariasBancariaRepositorio.consultarContaBancaria(op.getContaDestino());
+        
+        if (cb != null) {
+
+            if (tipoOperacoes == EnumTipoOperacoes.CREDITAR) {
+
+                creditarContaBancaria(cb, op);
+            } else if (tipoOperacoes == EnumTipoOperacoes.DEBITAR) {
+
+            }
+        }else{
+            throw new NuloVazioInesxistenteException("Conta Bancaria Inexistente");
+        }
+    }
+
+    private void creditarContaBancaria(ContaBancaria cb, OperacoesBancarias op) throws ContaExistenteException {
+
+        op.setCodigoOperacao( chaveDasOperacoes());
+        if (operacoesBancariasRepositorio.consultarOperacaoExistente(op.getCodigoOperacao())) {
+            throw new ContaExistenteException("Operacão já existe no sistema!");
+        }
+       
+        cb.crediditar(op.getValorTransferido());
+        operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
+       
+    }
+
+    private String chaveDasOperacoes() {
+        Long millisegundos = System.currentTimeMillis();
+        return millisegundos + "";
+    }
+
+    //=============================================
+    //*** REPOSITORIO DE OPERACOES
+    //=============================================
+    public Collection<OperacoesBancarias> listarTodasOperacaoRepository() {
+        return operacoesBancariasRepositorio.listarTodasOperacaoValuesRepository();
+
+    }
+
+    //To change body of generated methods, choose Tools | Templates.
 }
 
 /*

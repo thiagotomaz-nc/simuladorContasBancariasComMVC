@@ -5,7 +5,7 @@
  */
 package br.com.contas.exercicio_02.model.util;
 
-import br.com.contas.exercicio_02.model.exception.CampoNuloVazioException;
+import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
 import br.com.contas.exercicio_02.model.exception.CampoSizeInvalidoException;
 import br.com.contas.exercicio_02.model.exception.CaractereInvalidoEspacoBrancoException;
 import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
@@ -15,11 +15,11 @@ import javax.swing.JFormattedTextField;
  *
  * @author Thiago Tomaz
  */
-public class ValidationValores {
+public class ValidarValores {
 
-    public static void isNullEmpity(String valor, String mensagem) throws CampoNuloVazioException {
-        if (valor == null || valor.isEmpty()) {
-            throw new CampoNuloVazioException(mensagem);
+    public static void isNullEmpity(String valor, String mensagem) throws NuloVazioInesxistenteException {
+        if (valor.trim() == null || valor.isEmpty()) {
+            throw new NuloVazioInesxistenteException(mensagem);
         }
     }
 

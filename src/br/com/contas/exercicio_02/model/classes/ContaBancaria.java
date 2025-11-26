@@ -1,5 +1,7 @@
 package br.com.contas.exercicio_02.model.classes;
 
+import java.time.LocalDateTime;
+
 public abstract class ContaBancaria {
 
     private String nome;

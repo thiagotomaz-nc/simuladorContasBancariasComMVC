@@ -12,16 +12,25 @@ import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.ContaCorrente;
 import br.com.contas.exercicio_02.model.classes.ContaPoupanca;
 import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
-import br.com.contas.exercicio_02.model.exception.CampoNuloVazioException;
+import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
 import br.com.contas.exercicio_02.model.exception.ListasVaziaException;
 import br.com.contas.exercicio_02.services.ContaBancariaServices;
 import br.com.contas.exercicio_02.model.util.Mensagens;
-import br.com.contas.exercicio_02.model.util.ValidationValores;
+import br.com.contas.exercicio_02.model.util.ValidarValores;
+import br.com.contas.exercicio_02.view.ContaBancariaDepositarDebitar;
 import br.com.contas.exercicio_02.view.EnumAcaoView;
 import br.com.contas.exercicio_02.view.ContasBancariaEditarCadastrar;
+import br.com.contas.exercicio_02.view.OperacoesBancariasView;
 import br.com.contas.exercicio_02.view.TipoContaIG;
+import br.com.contas.exercicio_02.model.classes.EnumTipoOperacoes;
+import br.com.contas.exercicio_02.model.classes.OperacaoCredito;
+import br.com.contas.exercicio_02.model.classes.OperacaoDebito;
+import br.com.contas.exercicio_02.model.classes.OperacaoTransferenciaEntreContas;
+import br.com.contas.exercicio_02.model.classes.OperacoesBancarias;
 import br.com.contas.exercicio_02.view.table.CacheContas;
+import br.com.contas.exercicio_02.view.table.CacheOperacoesBancararias;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
+import br.com.contas.exercicio_02.view.table.OperacoesBancariasTableModel;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,35 +50,47 @@ public class ContasBancariasController {
     private ContaBancariaTableModel contaBancariaModeloTable;
     private static final Logger LOGGER = Logger.getLogger(ContasBancariasController.class.getName());
     private EnumAcaoView acaoView;
-   
+
+    private OperacoesBancariasTableModel operacoesBancariasTableModel;
+    private CacheOperacoesBancararias cacheOperacoesBancararias;
+
     // por que utilizar o static, pois sem o static teria que ter um Logger novo para cada objeto, o que não faz sentido.
     // Logger não precisa saber quantos objetos existem.
     // Ele só precisa saber qual classe está registrando mensagens.
-
     public ContasBancariasController(JFrame parent) {
         this.contaBancariaServices = new ContaBancariaServices();
         this.cacheContas = new CacheContas();
         this.frame = parent;
         this.contaBancariaModeloTable = new ContaBancariaTableModel(cacheContas);
+        this.cacheOperacoesBancararias = new CacheOperacoesBancararias();
+        this.operacoesBancariasTableModel = new OperacoesBancariasTableModel(cacheOperacoesBancararias);
     }
 
+    // --------------------------------------------
+    // MODELOS DE TABELAS
+    // --------------------------------------------
     public ContaBancariaTableModel getContaBancariaModeloTable() {
         return contaBancariaModeloTable;
     }
+    
+     public OperacoesBancariasTableModel getOperacaoModeloTable() {
+        return operacoesBancariasTableModel;
+    }
 
     // --------------------------------------------
-    // MÉTODOS DE OPERAÇÕES BANCÁRIAS
+    // MÉTODOS DE CONTAS BANCÁRIAS
     // --------------------------------------------
     private void cadastrarConta(ContaBancaria conta) {
         try {
+            
             contaBancariaServices.cadastrarConta(conta);
             Mensagens.informacao("Conta cadastrada com sucesso!\nTitular: " + conta.getNome() + "\nNúmero da Conta: " + conta.getNumeroConta());
             atualizarCacheDeContasBancarias();
 
-        } catch (SaldoInsuficienteException | ContaExistenteException ex) {
+        } catch (SaldoInsuficienteException | ContaExistenteException  ex) {
             Mensagens.error(ex.getMessage());
-        } catch (NumeroContaVazioException ex) {
-            LOGGER.info(ex.getMessage());
+        } catch (NuloVazioInesxistenteException ex) {
+           LOGGER.info("Conta bancaria não instanciada!");
         }
     }
 
@@ -78,11 +99,9 @@ public class ContasBancariasController {
             contaBancariaServices.editarConta(contaBancaria);
             Mensagens.informacao("Conta atualizada com sucesso!\nTitular: " + contaBancaria.getNome() + "\nNúmero da Conta: " + contaBancaria.getNumeroConta());
             atualizarCacheDeContasBancarias();
-        } catch (SaldoInsuficienteException ex) {
+        } catch (SaldoInsuficienteException | NuloVazioInesxistenteException ex) {
             Mensagens.error(ex.getMessage());
-        } catch (NumeroContaVazioException ex) {
-            LOGGER.info(ex.getMessage());
-        }
+        } 
     }
 
     public void excluirContaBancaria(int linha) {
@@ -109,7 +128,69 @@ public class ContasBancariasController {
         this.contaBancariaModeloTable.fireTableDataChanged();
     }
     
-    
+     private void atualizarCacheDeOperacoes() {
+        cacheOperacoesBancararias.atualizarCache(contaBancariaServices.listarTodasOperacaoRepository());
+        this.operacoesBancariasTableModel.fireTableDataChanged();
+    }
+
+// --------------------------------------------
+    // MÉTODOS DE OPERAÇÕES BANCÁRIAS
+    // --------------------------------------------
+    public void abrirOperacoesBancariasView() {
+        if (cacheOperacoesBancararias.sizeCache() == 0) {
+            Mensagens.error("Nenhuma Operação de transferência realizada!");
+            return;
+        }
+
+        OperacoesBancariasView operacoesBancariasView = new OperacoesBancariasView(frame, true, this);
+        operacoesBancariasView.setTitle("Operações Bancárias");
+        operacoesBancariasView.setVisible(true);
+    }
+
+    public void abrirViewRealizarOperacoesDebitoCredito(EnumTipoOperacoes tipoOperacoes, String titulo) {
+        try {
+            verificarTotalContasCadastradas();
+        } catch (ListasVaziaException ex) {
+            Mensagens.error(ex.getMessage());
+            return;
+        }  
+       
+        
+        OperacoesBancarias op = getOperacao(tipoOperacoes);
+        ContaBancariaDepositarDebitar contasBancariaEditarCadastrar = new ContaBancariaDepositarDebitar(frame, true, op, titulo, this);
+        contasBancariaEditarCadastrar.setVisible(true);
+        
+        cadastrarOperacaoBancariaDebitoCredito(op, tipoOperacoes);
+    }
+
+    public OperacoesBancarias getOperacao(EnumTipoOperacoes tipoConta) {
+        switch (tipoConta) {
+            case CREDITAR:
+                return new OperacaoCredito();
+            case DEBITAR:
+                return new OperacaoDebito();
+            case TRANSFERIR:
+                return new OperacaoTransferenciaEntreContas();
+            default:
+                throw new IllegalArgumentException("Classe não encontrada");
+        }
+    }
+
+    private void cadastrarOperacaoBancariaDebitoCredito(OperacoesBancarias op, EnumTipoOperacoes tipoOperacoes) {
+        try {
+            contaBancariaServices.cadastrarOperacaoBancariaDebitoCredito(op,  tipoOperacoes);
+            Mensagens.informacao("Operação realizada com sucesso!");
+            atualizarCacheDeContasBancarias();
+            atualizarCacheDeOperacoes();
+        } catch (NuloVazioInesxistenteException | SaldoInsuficienteException | ContaExistenteException ex) {
+            Mensagens.error(ex.getMessage());
+            } 
+  
+    }
+
+    public void realizarTransferencia(String contaOrigem, String ContaDestino) {
+
+    }
 
     // --------------------------------------------
     // MÉTODO PARA JANELAS
@@ -159,7 +240,7 @@ public class ContasBancariasController {
                 return new ContaPoupanca();
             default:
                 Mensagens.error("Conta não identificada");
-               return null;
+                return null;
         }
 
     }
@@ -187,41 +268,60 @@ public class ContasBancariasController {
                 break;
             default:
                 Mensagens.error("Operação não encontrada");
-                return;
 
         }
-
     }
 
     public void FiltrarConta(EnumTipoConta tipoContaSelecionada) {
+        if (cacheContas.sizeCache() == 0) {
+            Mensagens.error("Nenhuma conta Cadastrada!");
+            return;
+        }
         ArrayList<ContaBancaria> resultadoFiltro = new ArrayList<>(contaBancariaServices.filtrarContas(tipoContaSelecionada));
-        if(resultadoFiltro.size() >0){
+        if (resultadoFiltro.size() > 0) {
             cacheContas.atualizarCache(resultadoFiltro);
             contaBancariaModeloTable.atualizarTabela();
         }
     }
 
-    public void consultarContaBancariaNumeroDaConta(String text) {
+    public void consultarContaBancariaNumeroDaContaViewPrincipal(String text) {
         try {
-            ValidationValores.isNullEmpity(text.trim(), "O campo esta vazio ou incompleto!");
-            
+            ValidarValores.isNullEmpity(text.trim(), "O campo esta vazio ou incompleto!");
+
             ArrayList<ContaBancaria> consultaTemp = new ArrayList<>();
             consultaTemp.add(contaBancariaServices.filtrarContaBancariaUnitaria(text));
             cacheContas.atualizarCache(consultaTemp);
             contaBancariaModeloTable.atualizarTabela();
-            
+
             Mensagens.informacao("Conta encontrada com sucesso!");
-            
-        } catch (CampoNuloVazioException ex) {
+
+        } catch (NuloVazioInesxistenteException ex) {
             Mensagens.error(ex.getMessage());
             return;
         } catch (ListasVaziaException ex) {
-           Mensagens.error(ex.getMessage());
-           return;
+            Mensagens.error(ex.getMessage());
+            return;
         }
     }
-    
-    
+
+    public ContaBancaria consultarContaBancariaNumeroDaConta(String text) {
+        try {
+            verificarTotalContasCadastradas();
+            ValidarValores.isNullEmpity(text.trim(), "O campo esta vazio ou incompleto!");
+            ContaBancaria cb = contaBancariaServices.filtrarContaBancariaUnitaria(text);
+            return cb;
+
+        } catch (NuloVazioInesxistenteException | ListasVaziaException ex) {
+            Mensagens.error(ex.getMessage());
+            return null;
+        }
+    }
+
+    private void verificarTotalContasCadastradas() throws ListasVaziaException {
+        if (cacheContas.getCacheContasBancarias().size() == 0) {
+            throw new ListasVaziaException("Cadastre 1 conta para efetuar alguma operação báncaria");
+        }
+    }
 
 }
 

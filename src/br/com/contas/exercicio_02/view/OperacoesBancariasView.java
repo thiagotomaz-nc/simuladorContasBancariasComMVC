@@ -17,13 +17,24 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
      * Creates new form OperacoesBancariasView
      */
     private ContasBancariasController contasBancariasController;
-    
+
     public OperacoesBancariasView(java.awt.Frame parent, boolean modal, ContasBancariasController contasBancariasController) {
         super(parent, modal);
         initComponents();
         this.contasBancariasController = contasBancariasController;
         tabelaOperacoes.setModel(this.contasBancariasController.getOperacaoModeloTable());
+
         tabelaOperacoes.setRowHeight(30);
+
+        tabelaOperacoes.getColumnModel().getColumn(0).setMinWidth(100);
+        tabelaOperacoes.getColumnModel().getColumn(0).setMaxWidth(130);
+        
+        tabelaOperacoes.getColumnModel().getColumn(1).setMinWidth(140);
+        tabelaOperacoes.getColumnModel().getColumn(2).setMinWidth(250);
+        tabelaOperacoes.getColumnModel().getColumn(3).setMinWidth(140);
+        tabelaOperacoes.getColumnModel().getColumn(4).setMinWidth(140);
+       tabelaOperacoes.getColumnModel().getColumn(5).setMinWidth(70);
+       tabelaOperacoes.getColumnModel().getColumn(6).setMinWidth(150);
     }
 
     /**
@@ -43,6 +54,7 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         lblTotalOperações = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -80,12 +92,14 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
         );
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Total de Operações:");
 
+        lblTotalOperações.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblTotalOperações.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTotalOperações.setText("0");
 
@@ -97,7 +111,7 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblTotalOperações)
-                .addGap(0, 88, Short.MAX_VALUE))
+                .addGap(0, 124, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -106,6 +120,10 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
                 .addComponent(lblTotalOperações, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel3.setText("Legenda: C -> crédito  |   D -> Débito  |   T -> transferencia entre contas");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -113,7 +131,9 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(798, 798, 798))
+                .addGap(276, 276, 276)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -123,20 +143,23 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
      * @param args the command line arguments
      */
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

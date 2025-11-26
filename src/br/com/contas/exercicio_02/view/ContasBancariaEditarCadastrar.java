@@ -13,7 +13,7 @@ import br.com.contas.exercicio_02.model.exception.CaractereInvalidoEspacoBrancoE
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
 import br.com.contas.exercicio_02.model.exception.DoubleFormatClassCastException;
-import br.com.contas.exercicio_02.model.exception.NumeroFormatoException;
+import br.com.contas.exercicio_02.model.exception.NumeroDaContaFormatoException;
 import br.com.contas.exercicio_02.model.util.ConfigDefaultMoedaBR;
 import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
 import br.com.contas.exercicio_02.model.util.ConverterDouble;
@@ -84,6 +84,11 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -245,26 +250,25 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
             ValidarValores.isNullEmpity(txtNumeroDaConta.getText().trim(), "O Campo [ número da conta ] da conta não esta preenchido");
             ValidarValores.isNullEmpity(txtNomeContaCorrente.getText().trim(), "O Campo [ nome ] da conta não esta preenchido");
             ValidarValores.isNullEmpity(txtSaldoContaCorrente.getText().trim(), "O Campo [ saldo ] da conta não esta preenchido");
-            ValidarValores.isNullEmpity(txtInfoAdicionalConta.getText().trim(), "O Campo [ Informa~ ] da conta não esta preenchido");
+            ValidarValores.isNullEmpity(txtInfoAdicionalConta.getText().trim(), "O Campo [ Informação Adicional ] da conta não esta preenchido");
             //Verificar se o campo não aceite caracteres vazios entre os números
             ValidarValores.caractereInvalidoEspacoBranco(txtNumeroDaConta.getText());
             //validar campo numero da conta para que ele tenho os 8 caracteres
             ValidarValores.validarTamanho(txtNumeroDaConta.getText(), EnumValidacaoCampos.NUMERO_CONTA);
+            ValidarValores.isNumeroContaValido(txtNumeroDaConta.getText());
             //converter os valores do campo saldo e valor adicional para doubles
             saldo = ConverterDouble.converterObjectToDouble(txtSaldoContaCorrente.getValue());
             valorInfoAdicional = contaBancaria.isInfoAdicionalConta() ? ConverterDouble.converterObjectToDouble(txtInfoAdicionalConta.getValue()) : 0;
-            
-        } catch (NuloVazioInesxistenteException | CaractereInvalidoEspacoBrancoException | DoubleFormatClassCastException  ex) {
+
+        } catch (NuloVazioInesxistenteException | CaractereInvalidoEspacoBrancoException | DoubleFormatClassCastException ex) {
             Mensagens.error(ex.getMessage());
             return;
-        } catch (CampoSizeInvalidoException ex) {
+        } catch (CampoSizeInvalidoException  | NumeroDaContaFormatoException ex) {
             Mensagens.error(ex.getMessage());
             txtNumeroDaConta.setBorder(new LineBorder(Color.RED, 2));
             return;//aqui se interrompe o fluxo
-        }
+        } 
         //implementar o NumberFormat para trabalhar com moedas
-
-        
 
         // Correção caso o usuario digite -0, por acidente ou para testar o simulador
         // Esse caso ocorreu comigo e pesquisando descrobri essa tecnica
@@ -284,6 +288,10 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
     private void jLabel1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jLabel1AncestorAdded
 
     }//GEN-LAST:event_jLabel1AncestorAdded
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+       contaVazia();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -308,7 +316,12 @@ public class ContasBancariaEditarCadastrar extends javax.swing.JDialog {
     }
 
     private void fecharView() {
+       contaVazia();
         dispose();
+    }
+
+    private void contaVazia() {
+        contaBancaria = null;
     }
 
     public void setNomeDoBotao(String string) {

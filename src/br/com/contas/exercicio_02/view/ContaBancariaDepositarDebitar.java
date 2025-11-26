@@ -10,7 +10,7 @@ package br.com.contas.exercicio_02.view;
 import br.com.contas.exercicio_02.model.classes.EnumTipoOperacoes;
 import br.com.contas.exercicio_02.controller.ContasBancariasController;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
-import br.com.contas.exercicio_02.model.classes.OperacoesBancarias;
+import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
 import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
 import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
 import br.com.contas.exercicio_02.model.exception.CampoSizeInvalidoException;
@@ -43,19 +43,20 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
     private double valorCreditado;
     private int tipoOperacao;
 
-    private OperacoesBancarias operacoesBancarias;
+    private OperacaoBancaria operacoesBancarias;
     private ContasBancariasController contasBancariasController;
+    private ContaBancaria contaBancaria;
 
-    public ContaBancariaDepositarDebitar(JFrame parent, boolean modal, OperacoesBancarias operacoesBancarias, String titulo, ContasBancariasController contasBancariasController) {
+    public ContaBancariaDepositarDebitar(JFrame parent, boolean modal, OperacaoBancaria operacoesBancarias, String titulo, ContasBancariasController contasBancariasController, ContaBancaria contaBancaria) {
         super(parent, modal);
         initComponents();
         setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
 
         this.operacoesBancarias = operacoesBancarias;
+        this.contaBancaria = contaBancaria;
         this.contasBancariasController = contasBancariasController;
 
-        btnCadatrarEditar.setText("Realizar " + this.operacoesBancarias.getDescricaoOperacao());
-        // setTitle("Realizar "+this.operacoesBancarias.getDescricaoOperacao()+" em uma conta!");
+        btnSalvarOperacao.setText("Realizar " + this.operacoesBancarias.getDescricaoOperacao());
         setTitle(titulo);
 
         lgdDepositoDebito.setText("Valor a " + this.operacoesBancarias.getDescricaoOperacao() + ":");
@@ -109,11 +110,11 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
         lblTipoConta = new javax.swing.JLabel();
         lgdDepositoDebito = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        btnCadatrarEditar = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnSalvarOperacao = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
         txtNumeroDaConta = new javax.swing.JFormattedTextField();
         jLabel5 = new javax.swing.JLabel();
-        txtSaldoContaPoupanca = new javax.swing.JFormattedTextField();
+        txtValorCreditoDebito = new javax.swing.JFormattedTextField();
         btnPesquisar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -196,24 +197,29 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel4.setText("Número da conta:");
 
-        btnCadatrarEditar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnCadatrarEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icones_32/check.png"))); // NOI18N
-        btnCadatrarEditar.setText("Realizar Crédito");
-        btnCadatrarEditar.setEnabled(false);
-        btnCadatrarEditar.addActionListener(new java.awt.event.ActionListener() {
+        btnSalvarOperacao.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        btnSalvarOperacao.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icones_32/check.png"))); // NOI18N
+        btnSalvarOperacao.setText("Realizar Crédito");
+        btnSalvarOperacao.setEnabled(false);
+        btnSalvarOperacao.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCadatrarEditarActionPerformed(evt);
+                btnSalvarOperacaoActionPerformed(evt);
+            }
+        });
+        btnSalvarOperacao.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnSalvarOperacaoKeyPressed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icones_32/cancel.png"))); // NOI18N
-        jButton2.setText("Cancelar");
-        jButton2.setMaximumSize(new java.awt.Dimension(121, 28));
-        jButton2.setMinimumSize(new java.awt.Dimension(121, 28));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icones_32/cancel.png"))); // NOI18N
+        btnCancelar.setText("Cancelar");
+        btnCancelar.setMaximumSize(new java.awt.Dimension(121, 28));
+        btnCancelar.setMinimumSize(new java.awt.Dimension(121, 28));
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnCancelarActionPerformed(evt);
             }
         });
 
@@ -242,9 +248,19 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
         jLabel5.setForeground(new java.awt.Color(102, 102, 102));
         jLabel5.setText("com dígito verificador");
 
-        txtSaldoContaPoupanca.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
-        txtSaldoContaPoupanca.setEnabled(false);
-        txtSaldoContaPoupanca.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtValorCreditoDebito.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        txtValorCreditoDebito.setEnabled(false);
+        txtValorCreditoDebito.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtValorCreditoDebito.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtValorCreditoDebitoActionPerformed(evt);
+            }
+        });
+        txtValorCreditoDebito.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtValorCreditoDebitoKeyPressed(evt);
+            }
+        });
 
         btnPesquisar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnPesquisar.setText("Pesquisar");
@@ -268,12 +284,12 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtNumeroDaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSaldoContaPoupanca, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtValorCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCadatrarEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnSalvarOperacao, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnPesquisar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -293,11 +309,11 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lgdDepositoDebito)
-                    .addComponent(txtSaldoContaPoupanca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtValorCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCadatrarEditar)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnSalvarOperacao)
+                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(39, Short.MAX_VALUE))
         );
 
@@ -305,47 +321,24 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCadatrarEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadatrarEditarActionPerformed
+    private void btnSalvarOperacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarOperacaoActionPerformed
 
-        btnCadatrarEditar.requestFocus();
-        valorCreditado = 0;
+        salvarContaBancaria();
 
-        try {
-            ValidarValores.isNullEmpity(txtNumeroDaConta.getText().trim(), "Número da conta inválido ou vazio!");
-            ValidarValores.isNullEmpity(txtSaldoContaPoupanca.getText().trim(), "O valor a " + operacoesBancarias.getDescricaoOperacao() + " inválido ou vazio!");
-            ValidarValores.caractereInvalidoEspacoBranco(txtNumeroDaConta.getText());
-            ValidarValores.caractereInvalidoEspacoBranco(txtSaldoContaPoupanca.getText());
-            ValidarValores.validarTamanho(txtNumeroDaConta.getText().trim(), EnumValidacaoCampos.NUMERO_CONTA);
-            valorCreditado = ConverterDouble.converterObjectToDouble(txtSaldoContaPoupanca.getValue());
+    }//GEN-LAST:event_btnSalvarOperacaoActionPerformed
 
-        } catch (NuloVazioInesxistenteException | CampoSizeInvalidoException | DoubleFormatClassCastException | CaractereInvalidoEspacoBrancoException ex) {
-            Mensagens.error(ex.getMessage());
-            return;
-        }
-
-        //salvando uma operaçao que vai ser verificada no service       
-        operacoesBancarias.setContaDestino(txtNumeroDaConta.getText());
-        operacoesBancarias.setContaOrigem("000000-0");
-        operacoesBancarias.setValorTransferido(valorCreditado);
-        operacoesBancarias.setDataTransferencia(LocalDateTime.now());
-        Mensagens.informacao(operacoesBancarias.getDataTransferencia()+"");
-
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        OperacaoVazia();
         dispose();
-
-    }//GEN-LAST:event_btnCadatrarEditarActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        operacoesBancarias = null;
-        dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
-       pesquisarContaBancaria();
+        pesquisarContaBancaria();
 
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        operacoesBancarias=null;
+        OperacaoVazia();
     }//GEN-LAST:event_formWindowClosing
 
     private void txtNumeroDaContaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNumeroDaContaKeyReleased
@@ -357,19 +350,35 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
     }//GEN-LAST:event_txtNumeroDaContaActionPerformed
 
     private void txtNumeroDaContaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNumeroDaContaKeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             txtNumeroDaConta.postActionEvent();
         }
     }//GEN-LAST:event_txtNumeroDaContaKeyPressed
+
+    private void txtValorCreditoDebitoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtValorCreditoDebitoActionPerformed
+        btnSalvarOperacao.requestFocus();
+    }//GEN-LAST:event_txtValorCreditoDebitoActionPerformed
+
+    private void txtValorCreditoDebitoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtValorCreditoDebitoKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtValorCreditoDebito.postActionEvent();
+        }
+    }//GEN-LAST:event_txtValorCreditoDebitoKeyPressed
+
+    private void btnSalvarOperacaoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnSalvarOperacaoKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            salvarContaBancaria();
+        }
+    }//GEN-LAST:event_btnSalvarOperacaoKeyPressed
 
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCadatrarEditar;
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnPesquisar;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnSalvarOperacao;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -382,44 +391,69 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
     private javax.swing.JLabel lblTitularConta;
     private javax.swing.JLabel lgdDepositoDebito;
     private javax.swing.JFormattedTextField txtNumeroDaConta;
-    private javax.swing.JFormattedTextField txtSaldoContaPoupanca;
+    private javax.swing.JFormattedTextField txtValorCreditoDebito;
     // End of variables declaration//GEN-END:variables
 
-    public double getValorCreditado() {
-        return valorCreditado;
-    }
-
-    public void setValorCreditado(double valorCreditado) {
-        this.valorCreditado = valorCreditado;
-    }
-
-    public String getNumeroDaConta() {
-        return numeroDaConta;
-    }
-
-    public void setNumeroDaConta(String numeroDaConta) {
-        this.numeroDaConta = numeroDaConta;
+    private void OperacaoVazia() {
+        contaBancaria = null;
+        operacoesBancarias = null;
     }
 
     private void pesquisarContaBancaria() {
         btnPesquisar.requestFocus();
         boolean exibir = false;
-        ContaBancaria cb = contasBancariasController.consultarContaBancariaNumeroDaConta(txtNumeroDaConta.getText());
-        
-        if (cb != null) {
-            lblNumeroConta.setText(cb.getNumeroConta());
-            lblTipoConta.setText(cb.getDescricaoConta());
-            lblTitularConta.setText(cb.getNome());
+
+        contaBancaria = contasBancariasController.consultarContaBancariaNumeroDaConta(txtNumeroDaConta.getText());
+
+        if (contaBancaria != null) {
+            lblNumeroConta.setText(contaBancaria.getNumeroConta());
+            lblTipoConta.setText(contaBancaria.getDescricaoConta());
+            lblTitularConta.setText(contaBancaria.getNome());
             exibir = true;
-            txtSaldoContaPoupanca.requestFocus();
+            txtValorCreditoDebito.requestFocus();
         } else {
             lblNumeroConta.setText("-");
             lblTipoConta.setText("-");
             lblTitularConta.setText("-");
         }
 
-        btnCadatrarEditar.setEnabled(exibir);
-        txtSaldoContaPoupanca.setEnabled(exibir);
+        btnSalvarOperacao.setEnabled(exibir);
+        txtValorCreditoDebito.setEnabled(exibir);
+    }
+
+    public ContaBancaria getContaBancaria() {
+        return contaBancaria;
+    }
+
+    private void salvarContaBancaria() {
+        btnSalvarOperacao.requestFocus();
+        valorCreditado = 0;
+
+        try {
+            ValidarValores.isNullEmpity(txtNumeroDaConta.getText().trim(), "Número da conta inválido ou vazio!");
+            ValidarValores.isNullEmpity(txtValorCreditoDebito.getText().trim(), "O valor a " + operacoesBancarias.getDescricaoOperacao() + " inválido ou vazio!");
+            ValidarValores.caractereInvalidoEspacoBranco(txtNumeroDaConta.getText());
+            ValidarValores.caractereInvalidoEspacoBranco(txtValorCreditoDebito.getText());
+            ValidarValores.validarTamanho(txtNumeroDaConta.getText().trim(), EnumValidacaoCampos.NUMERO_CONTA);
+            valorCreditado = ConverterDouble.converterObjectToDouble(txtValorCreditoDebito.getValue());
+
+        } catch (NuloVazioInesxistenteException | CampoSizeInvalidoException | DoubleFormatClassCastException | CaractereInvalidoEspacoBrancoException ex) {
+            Mensagens.error(ex.getMessage());
+            return;
+        }
+
+        //salvando uma operaçao que vai ser verificada no service 
+        if(operacoesBancarias.getTipoOperacoes()==EnumTipoOperacoes.CREDITAR){
+            operacoesBancarias.setContaDestino(txtNumeroDaConta.getText());
+            operacoesBancarias.setContaOrigem("000000-0");    
+        }else{
+            operacoesBancarias.setContaDestino("000000-0");
+            operacoesBancarias.setContaOrigem(txtNumeroDaConta.getText()); 
+        }
+       operacoesBancarias.setValorTransferido(valorCreditado);
+       operacoesBancarias.setDataTransferencia(LocalDateTime.now());
+
+       dispose();
     }
 
 }

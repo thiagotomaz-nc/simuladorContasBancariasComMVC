@@ -9,13 +9,17 @@ package br.com.contas.exercicio_02.model.exception;
  *
  * @author Thiago Tomaz
  */
-public class NumeroFormatoException extends Exception{
+public class SaldoNegaticoException extends Exception{
 
-    public NumeroFormatoException() {
+    public SaldoNegaticoException() {
     }
 
-    public NumeroFormatoException(String string) {
+    public SaldoNegaticoException(String string) {
         super(string);
+    }
+
+    public SaldoNegaticoException(String string, Throwable thrwbl) {
+        super(string, thrwbl);
     }
     
 }

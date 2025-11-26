@@ -4,12 +4,11 @@ import br.com.contas.exercicio_02.model.exception.ContaExistenteException;
 import br.com.contas.exercicio_02.model.exception.SaldoInsuficienteException;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
-import br.com.contas.exercicio_02.model.classes.EnumTipoOperacoes;
-import br.com.contas.exercicio_02.model.classes.OperacoesBancarias;
+import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
 import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
 
 import br.com.contas.exercicio_02.model.exception.ListasVaziaException;
-import br.com.contas.exercicio_02.model.util.Mensagens;
+import br.com.contas.exercicio_02.model.exception.SaldoNegaticoException;
 import br.com.contas.exercicio_02.model.util.ValidarValores;
 import br.com.contas.exercicio_02.repository.ContaBancariaRepositorio;
 import br.com.contas.exercicio_02.repository.OperacoesBancariasRepositorio;
@@ -36,13 +35,9 @@ public class ContaBancariaServices {
         return contaBancariasBancariaRepositorio.listarTodasContasBancariasRepository();
     }
 
-    public ContaBancaria cadastrarConta(ContaBancaria conta) throws ContaExistenteException, SaldoInsuficienteException, NuloVazioInesxistenteException {
+    public ContaBancaria cadastrarConta(ContaBancaria conta) throws ContaExistenteException, SaldoNegaticoException, NuloVazioInesxistenteException {
         //saldo não pode ser negativo
         //caso eles sejam utilizados novamente, transformar em metodos da classe services
-        if (conta == null || conta.getNumeroConta() == null) {
-            throw new NuloVazioInesxistenteException();
-        }
-
         saldoPositivo(conta.getSaldo());
         saldoPositivo(conta.getInfoAdicionalConta());
 
@@ -51,7 +46,7 @@ public class ContaBancariaServices {
         return contaBancariasBancariaRepositorio.cadastrarConta(conta);
     }
 
-    public ContaBancaria editarConta(ContaBancaria contaBancaria) throws SaldoInsuficienteException, NuloVazioInesxistenteException {
+    public ContaBancaria editarConta(ContaBancaria contaBancaria) throws SaldoNegaticoException, NuloVazioInesxistenteException {
         saldoPositivo(contaBancaria.getSaldo());
         saldoPositivo(contaBancaria.getInfoAdicionalConta());
         ValidarValores.isNullEmpity(contaBancaria.getNumeroConta(), "Número da conta vazia!");
@@ -66,9 +61,9 @@ public class ContaBancariaServices {
     //=============================================
     //*** Regras em metodos para serem reaproveitados***
     //=============================================
-    public void saldoPositivo(double valor) throws SaldoInsuficienteException {
+    public void saldoPositivo(double valor) throws SaldoNegaticoException {
         if (valor < 0) {
-            throw new SaldoInsuficienteException("Saldo(s) insuficiente para cadastrar a conta\nTente novamente!");
+            throw new SaldoNegaticoException("Saldo(s) insuficiente para cadastrar a conta\nTente novamente!");
         }
     }
 
@@ -94,37 +89,28 @@ public class ContaBancariaServices {
         return contaBancaria;
     }
 
-    public void cadastrarOperacaoBancariaDebitoCredito(OperacoesBancarias op, EnumTipoOperacoes tipoOperacoes) throws NuloVazioInesxistenteException, SaldoInsuficienteException, ContaExistenteException {
-        if (op == null) {
-            throw new NuloVazioInesxistenteException();
-        }
+    public void cadastrarOperacaoBancariaDebitoCredito(OperacaoBancaria op, ContaBancaria contaBancaria) throws NuloVazioInesxistenteException, SaldoNegaticoException, ContaExistenteException {
+
         saldoPositivo(op.getValorTransferido());
-              
-        ContaBancaria cb = contaBancariasBancariaRepositorio.consultarContaBancaria(op.getContaDestino());
-        
+
+        ContaBancaria cb = contaBancaria;
+
         if (cb != null) {
+            creditarContaBancaria(cb, op);
 
-            if (tipoOperacoes == EnumTipoOperacoes.CREDITAR) {
-
-                creditarContaBancaria(cb, op);
-            } else if (tipoOperacoes == EnumTipoOperacoes.DEBITAR) {
-
-            }
-        }else{
+        } else {
             throw new NuloVazioInesxistenteException("Conta Bancaria Inexistente");
         }
     }
 
-    private void creditarContaBancaria(ContaBancaria cb, OperacoesBancarias op) throws ContaExistenteException {
+    private void creditarContaBancaria(ContaBancaria cb, OperacaoBancaria op) throws ContaExistenteException {
 
-        op.setCodigoOperacao( chaveDasOperacoes());
-        if (operacoesBancariasRepositorio.consultarOperacaoExistente(op.getCodigoOperacao())) {
-            throw new ContaExistenteException("Operacão já existe no sistema!");
-        }
-       
+        op.setCodigoOperacao(chaveDasOperacoes());
+        consultarOperacaoExistente(op);
+
         cb.crediditar(op.getValorTransferido());
         operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
-       
+
     }
 
     private String chaveDasOperacoes() {
@@ -135,12 +121,58 @@ public class ContaBancariaServices {
     //=============================================
     //*** REPOSITORIO DE OPERACOES
     //=============================================
-    public Collection<OperacoesBancarias> listarTodasOperacaoRepository() {
+    public Collection<OperacaoBancaria> listarTodasOperacaoRepository() {
         return operacoesBancariasRepositorio.listarTodasOperacaoValuesRepository();
 
     }
 
-    //To change body of generated methods, choose Tools | Templates.
+    //=============================================
+    //*** Cadastrar OPERAÇÕES DE CRÉDITO
+    //=============================================
+    public void cadastrarOperacaoBancariaDebito(OperacaoBancaria op, ContaBancaria contaBancaria) throws SaldoInsuficienteException, SaldoNegaticoException, NuloVazioInesxistenteException, ContaExistenteException {
+        saldoPositivo(op.getValorTransferido());
+
+        if (contaBancaria != null) {
+            verificarSaldoSuficiente(contaBancaria, op.getValorTransferido());
+            debitarDaConta(contaBancaria, op);
+        } else {
+            throw new NuloVazioInesxistenteException("Conta Bancaria Inexistente");
+        }
+
+    }
+    
+    //=============================================
+    //*** OPERAÇÕES DE DÉBITO
+    //=============================================
+    private void debitarDaConta(ContaBancaria contaBancaria, OperacaoBancaria op) throws ContaExistenteException {
+        op.setCodigoOperacao(chaveDasOperacoes());
+        consultarOperacaoExistente(op);
+        contaBancaria.debitar(op.getValorTransferido());
+        operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
+
+    }
+
+    public void verificarSaldoSuficiente(ContaBancaria contabancaria, double valor) throws SaldoInsuficienteException {
+
+        if (contabancaria.getTipoConta() == EnumTipoConta.CONTACORRENTE) {
+            if ((contabancaria.getSaldo() + contabancaria.getInfoAdicionalConta()) < valor) {
+                throw new SaldoInsuficienteException("O valor é maior que o saldo! Débito não realizado!");
+            }
+        }else if(contabancaria.getTipoConta() == EnumTipoConta.CONTAPOUPANCA){
+         if (contabancaria.getSaldo() < valor) {
+                throw new SaldoInsuficienteException("O valor é maior que o saldo! Débito não realizado!");
+            }
+        }
+    }
+
+    private void consultarOperacaoExistente(OperacaoBancaria op) throws ContaExistenteException {
+        if (operacoesBancariasRepositorio.consultarOperacaoExistente(op.getCodigoOperacao())) {
+            throw new ContaExistenteException("Operacão já existe no sistema!");
+        }
+    }
+    //*************************************
+    //*** FIM DAS OPERACOES
+    //*************************************
 }
 
 /*

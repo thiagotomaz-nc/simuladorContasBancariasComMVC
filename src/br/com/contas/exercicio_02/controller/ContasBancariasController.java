@@ -26,7 +26,8 @@ import br.com.contas.exercicio_02.model.classes.EnumTipoOperacoes;
 import br.com.contas.exercicio_02.model.classes.OperacaoCredito;
 import br.com.contas.exercicio_02.model.classes.OperacaoDebito;
 import br.com.contas.exercicio_02.model.classes.OperacaoTransferenciaEntreContas;
-import br.com.contas.exercicio_02.model.classes.OperacoesBancarias;
+import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
+import br.com.contas.exercicio_02.model.exception.SaldoNegaticoException;
 import br.com.contas.exercicio_02.view.table.CacheContas;
 import br.com.contas.exercicio_02.view.table.CacheOperacoesBancararias;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
@@ -72,8 +73,8 @@ public class ContasBancariasController {
     public ContaBancariaTableModel getContaBancariaModeloTable() {
         return contaBancariaModeloTable;
     }
-    
-     public OperacoesBancariasTableModel getOperacaoModeloTable() {
+
+    public OperacoesBancariasTableModel getOperacaoModeloTable() {
         return operacoesBancariasTableModel;
     }
 
@@ -82,26 +83,27 @@ public class ContasBancariasController {
     // --------------------------------------------
     private void cadastrarConta(ContaBancaria conta) {
         try {
-            
+            contaVaziaNaoInstanciada(conta);
             contaBancariaServices.cadastrarConta(conta);
             Mensagens.informacao("Conta cadastrada com sucesso!\nTitular: " + conta.getNome() + "\nNúmero da Conta: " + conta.getNumeroConta());
             atualizarCacheDeContasBancarias();
 
-        } catch (SaldoInsuficienteException | ContaExistenteException  ex) {
+        } catch (SaldoNegaticoException | ContaExistenteException ex) {
             Mensagens.error(ex.getMessage());
         } catch (NuloVazioInesxistenteException ex) {
-           LOGGER.info("Conta bancaria não instanciada!");
+            LOGGER.info("Conta bancaria não instanciada!");
         }
     }
 
     private void editarConta(ContaBancaria contaBancaria) {
         try {
+            contaVaziaNaoInstanciada(contaBancaria);
             contaBancariaServices.editarConta(contaBancaria);
             Mensagens.informacao("Conta atualizada com sucesso!\nTitular: " + contaBancaria.getNome() + "\nNúmero da Conta: " + contaBancaria.getNumeroConta());
             atualizarCacheDeContasBancarias();
-        } catch (SaldoInsuficienteException | NuloVazioInesxistenteException ex) {
+        } catch (SaldoNegaticoException | NuloVazioInesxistenteException ex) {
             Mensagens.error(ex.getMessage());
-        } 
+        }
     }
 
     public void excluirContaBancaria(int linha) {
@@ -127,8 +129,8 @@ public class ContasBancariasController {
         cacheContas.atualizarCache(contaBancariaServices.listarTodasContasBancarias());
         this.contaBancariaModeloTable.fireTableDataChanged();
     }
-    
-     private void atualizarCacheDeOperacoes() {
+
+    private void atualizarCacheDeOperacoes() {
         cacheOperacoesBancararias.atualizarCache(contaBancariaServices.listarTodasOperacaoRepository());
         this.operacoesBancariasTableModel.fireTableDataChanged();
     }
@@ -153,17 +155,27 @@ public class ContasBancariasController {
         } catch (ListasVaziaException ex) {
             Mensagens.error(ex.getMessage());
             return;
-        }  
-       
-        
-        OperacoesBancarias op = getOperacao(tipoOperacoes);
-        ContaBancariaDepositarDebitar contasBancariaEditarCadastrar = new ContaBancariaDepositarDebitar(frame, true, op, titulo, this);
+        }
+
+        OperacaoBancaria op = getOperacao(tipoOperacoes);
+
+        ContaBancariaDepositarDebitar contasBancariaEditarCadastrar = new ContaBancariaDepositarDebitar(frame, true, op, titulo, this, null);
         contasBancariaEditarCadastrar.setVisible(true);
-        
-        cadastrarOperacaoBancariaDebitoCredito(op, tipoOperacoes);
+
+        try {
+            operacaoVaziaNaoInstanciada(op);
+        } catch (NuloVazioInesxistenteException ex) {
+            LOGGER.info(ex.getMessage());
+        }
+        if (op.getTipoOperacoes() == EnumTipoOperacoes.CREDITAR) {
+            cadastrarOperacaoBancariaCredito(op, contasBancariaEditarCadastrar.getContaBancaria());
+        } else if (op.getTipoOperacoes() == EnumTipoOperacoes.DEBITAR) {
+            cadastrarOperacaoBancariaDebito(op, contasBancariaEditarCadastrar.getContaBancaria());
+        }
+
     }
 
-    public OperacoesBancarias getOperacao(EnumTipoOperacoes tipoConta) {
+    public OperacaoBancaria getOperacao(EnumTipoOperacoes tipoConta) {
         switch (tipoConta) {
             case CREDITAR:
                 return new OperacaoCredito();
@@ -176,24 +188,40 @@ public class ContasBancariasController {
         }
     }
 
-    private void cadastrarOperacaoBancariaDebitoCredito(OperacoesBancarias op, EnumTipoOperacoes tipoOperacoes) {
+    private void cadastrarOperacaoBancariaCredito(OperacaoBancaria op, ContaBancaria contaBancaria) {
         try {
-            contaBancariaServices.cadastrarOperacaoBancariaDebitoCredito(op,  tipoOperacoes);
+            contaBancariaServices.cadastrarOperacaoBancariaDebitoCredito(op, contaBancaria);
             Mensagens.informacao("Operação realizada com sucesso!");
             atualizarCacheDeContasBancarias();
             atualizarCacheDeOperacoes();
-        } catch (NuloVazioInesxistenteException | SaldoInsuficienteException | ContaExistenteException ex) {
+        } catch ( ContaExistenteException | SaldoNegaticoException |  NuloVazioInesxistenteException ex) {
             Mensagens.error(ex.getMessage());
-            } 
-  
+        }
+    }
+
+    private void cadastrarOperacaoBancariaDebito(OperacaoBancaria op, ContaBancaria contaBancaria) {
+        try {
+            contaBancariaServices.cadastrarOperacaoBancariaDebito(op, contaBancaria); 
+            Mensagens.informacao("Operação realizada com sucesso!");
+            atualizarCacheDeContasBancarias();
+            atualizarCacheDeOperacoes();
+        } catch (SaldoInsuficienteException | SaldoNegaticoException | NuloVazioInesxistenteException | ContaExistenteException ex) {
+            Mensagens.error(ex.getMessage());
+        }
     }
 
     public void realizarTransferencia(String contaOrigem, String ContaDestino) {
 
     }
 
+    private void operacaoVaziaNaoInstanciada(OperacaoBancaria operacaoBancaria) throws NuloVazioInesxistenteException {
+        if (operacaoBancaria == null) {
+            throw new NuloVazioInesxistenteException();
+        }
+    }
+
     // --------------------------------------------
-    // MÉTODO PARA JANELAS
+    // MÉTODO PARA JANELAS CONTAS BANCARIAS
     // No padrão MVC, o Controller é justamente o lugar onde a lógica de fluxo da aplicação deve ficar,
     // sem incluir regras de negócio pesadas (essas ficam no Service/Model).
     // --------------------------------------------
@@ -320,6 +348,12 @@ public class ContasBancariasController {
     private void verificarTotalContasCadastradas() throws ListasVaziaException {
         if (cacheContas.getCacheContasBancarias().size() == 0) {
             throw new ListasVaziaException("Cadastre 1 conta para efetuar alguma operação báncaria");
+        }
+    }
+
+    private void contaVaziaNaoInstanciada(ContaBancaria conta) throws NuloVazioInesxistenteException {
+        if (conta == null) {
+            throw new NuloVazioInesxistenteException();
         }
     }
 

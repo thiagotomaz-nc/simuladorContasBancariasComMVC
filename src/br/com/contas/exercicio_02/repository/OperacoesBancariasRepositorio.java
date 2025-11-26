@@ -5,7 +5,7 @@
  */
 package br.com.contas.exercicio_02.repository;
 
-import br.com.contas.exercicio_02.model.classes.OperacoesBancarias;
+import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,9 +21,9 @@ import java.util.Map;
 // Complexidade de O(1) na média — tempo constante
 public class OperacoesBancariasRepositorio {
 
-    private HashMap<String, OperacoesBancarias> operacoesBancarias = new HashMap<>();
+    private HashMap<String, OperacaoBancaria> operacoesBancarias = new HashMap<>();
 
-    public OperacoesBancarias salvarOperacao(String chave, OperacoesBancarias operacao) {
+    public OperacaoBancaria salvarOperacao(String chave, OperacaoBancaria operacao) {
         operacoesBancarias.put(chave, operacao);
         return operacao;
     }
@@ -32,7 +32,7 @@ public class OperacoesBancariasRepositorio {
         return operacoesBancarias.containsKey(chave);
     }
 
-    public OperacoesBancarias atualizarOperacao(String chave, OperacoesBancarias operacao) {
+    public OperacaoBancaria atualizarOperacao(String chave, OperacaoBancaria operacao) {
         return operacoesBancarias.replace(chave, operacao);
         /*  O meto replace retorna o objeto antigo que foi atualizado ou null caso ele não seja encontrado
         para facilitar eu resolvi por meio da lógica, transformar esse retorno em verdadeiro e falso;
@@ -47,17 +47,17 @@ public class OperacoesBancariasRepositorio {
          */
     }
 
-    public OperacoesBancarias excluirOperacao(String chaveOperacaoBancaria) {
+    public OperacaoBancaria excluirOperacao(String chaveOperacaoBancaria) {
         return operacoesBancarias.remove(chaveOperacaoBancaria);
     }
 
-    public OperacoesBancarias consultarOperacao(String chave) {
+    public OperacaoBancaria consultarOperacao(String chave) {
         return operacoesBancarias.get(chave);
     }
 
    
 
-    public Collection<OperacoesBancarias> listarTodasOperacaoValuesRepository() {
+    public Collection<OperacaoBancaria> listarTodasOperacaoValuesRepository() {
         return Collections.unmodifiableCollection(operacoesBancarias.values());//Forma correta, cria-se uma copia e retorna
 
         /*
@@ -68,11 +68,11 @@ public class OperacoesBancariasRepositorio {
          */
     }
 
-    public Collection<OperacoesBancarias> filtrarOperacoesContaBancariaUnitaria(String numeroContaOrigem)  {
+    public Collection<OperacaoBancaria> filtrarOperacoesContaBancariaUnitaria(String numeroContaOrigem)  {
         //Percorre-se todo o hashMap pelos values dele
-        ArrayList<OperacoesBancarias> operacoesFiltradas = new ArrayList();
+        ArrayList<OperacaoBancaria> operacoesFiltradas = new ArrayList();
 
-        for (OperacoesBancarias op : listarTodasOperacaoValuesRepository()) {
+        for (OperacaoBancaria op : listarTodasOperacaoValuesRepository()) {
             if (op.getContaOrigem().equals(numeroContaOrigem.trim())) {
                 operacoesFiltradas.add(op);
             }

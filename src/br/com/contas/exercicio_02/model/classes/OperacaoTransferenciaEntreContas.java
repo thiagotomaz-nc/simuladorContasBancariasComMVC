@@ -11,16 +11,21 @@ import br.com.contas.exercicio_02.view.TipoContaIG;
  *
  * @author Thiago Tomaz
  */
-public class OperacaoTransferenciaEntreContas extends OperacoesBancarias{
+public class OperacaoTransferenciaEntreContas extends OperacaoBancaria{
 
     @Override
     public String getDescricaoOperacao() {
-        return "transferir";
+        return "Transferência";
     }
 
     @Override
     public EnumTipoOperacoes getTipoOperacoes() {
        return EnumTipoOperacoes.TRANSFERIR;
+    }
+    
+      @Override
+    public String siglaOperacao() {
+        return "T";
     }
     
 }

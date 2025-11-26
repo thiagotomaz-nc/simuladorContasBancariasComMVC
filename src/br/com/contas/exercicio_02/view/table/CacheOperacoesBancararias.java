@@ -5,7 +5,7 @@
  */
 package br.com.contas.exercicio_02.view.table;
 
-import br.com.contas.exercicio_02.model.classes.OperacoesBancarias;
+import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -18,15 +18,15 @@ import java.util.Collection;
 */
 public class CacheOperacoesBancararias {
        
-    private final ArrayList<OperacoesBancarias> OperacoesBancariasCache  = new ArrayList<>();
+    private final ArrayList<OperacaoBancaria> OperacoesBancariasCache  = new ArrayList<>();
        
-    public void atualizarCache(Collection<OperacoesBancarias> dadosContaBancaria) {
+    public void atualizarCache(Collection<OperacaoBancaria> dadosContaBancaria) {
         this.OperacoesBancariasCache.clear();
         this.OperacoesBancariasCache.addAll(dadosContaBancaria);
                 
        }
     
-    public OperacoesBancarias consultarConta(int indice){
+    public OperacaoBancaria consultarConta(int indice){
         return OperacoesBancariasCache.get(indice);    
     }
     
@@ -34,7 +34,7 @@ public class CacheOperacoesBancararias {
         return OperacoesBancariasCache.size();
     }
     
-    public ArrayList<OperacoesBancarias> getCacheContasBancarias(){
+    public ArrayList<OperacaoBancaria> getCacheContasBancarias(){
         return OperacoesBancariasCache;
     }
     

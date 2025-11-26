@@ -6,7 +6,7 @@
 package br.com.contas.exercicio_02.model.util;
 
 import br.com.contas.exercicio_02.model.exception.DoubleFormatClassCastException;
-import br.com.contas.exercicio_02.model.exception.NumeroFormatoException;
+import br.com.contas.exercicio_02.model.exception.NumeroDaContaFormatoException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -25,11 +25,11 @@ public class ConverterDouble {
         }
     }
 
-    public static double converterStringToDouble(String value) throws NumeroFormatoException {
+    public static double converterStringToDouble(String value) throws NumeroDaContaFormatoException {
         try {
                  return new BigDecimal(Double.parseDouble(value.trim())).setScale(2, RoundingMode.HALF_UP).doubleValue();
         } catch (NumberFormatException ex) {
-            throw new NumeroFormatoException("Formato de número inteiro invalido!");
+            throw new NumeroDaContaFormatoException("Formato de número inteiro invalido!");
         }
 
     }

@@ -9,7 +9,7 @@ package br.com.contas.exercicio_02.model.classes;
  *
  * @author Thiago Tomaz
  */
-public class OperacaoDebito extends OperacoesBancarias {
+public class OperacaoDebito extends OperacaoBancaria {
 
     @Override
     public String getDescricaoOperacao() {
@@ -19,6 +19,11 @@ public class OperacaoDebito extends OperacoesBancarias {
     @Override
     public EnumTipoOperacoes getTipoOperacoes() {
         return EnumTipoOperacoes.DEBITAR;
+    }
+    
+      @Override
+    public String siglaOperacao() {
+        return "D";
     }
 
 }

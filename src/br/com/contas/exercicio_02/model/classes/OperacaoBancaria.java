@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @author Thiago Tomaz
  */
 //classe para representar as operações bancarias
-public abstract class OperacoesBancarias {
+public abstract class OperacaoBancaria {
     
     private String codigoOperacao;
     private String contaOrigem;
@@ -64,6 +64,6 @@ public abstract class OperacoesBancarias {
     //Aplicando o polimorfismo
     public abstract String getDescricaoOperacao();
     public abstract EnumTipoOperacoes getTipoOperacoes();
-   
+    public abstract String siglaOperacao();
      
 }

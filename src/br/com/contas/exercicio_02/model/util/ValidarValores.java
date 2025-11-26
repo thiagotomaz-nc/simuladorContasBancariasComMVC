@@ -9,7 +9,7 @@ import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException
 import br.com.contas.exercicio_02.model.exception.CampoSizeInvalidoException;
 import br.com.contas.exercicio_02.model.exception.CaractereInvalidoEspacoBrancoException;
 import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
-import javax.swing.JFormattedTextField;
+import br.com.contas.exercicio_02.model.exception.NumeroDaContaFormatoException;
 
 /**
  *
@@ -34,7 +34,10 @@ public class ValidarValores {
             throw new CaractereInvalidoEspacoBrancoException("Remova os espaços em branco para continuar!");
         }
     }
-
-   
     
+    public static void isNumeroContaValido(String numeroConta) throws NumeroDaContaFormatoException{
+            if(numeroConta.trim().equals("000000-0")){
+                throw new NumeroDaContaFormatoException("Número da conta inválido!");
+            }
+    }
 }

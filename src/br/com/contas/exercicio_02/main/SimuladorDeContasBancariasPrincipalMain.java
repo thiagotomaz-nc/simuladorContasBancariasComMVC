@@ -137,9 +137,10 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         jMenu2 = new javax.swing.JMenu();
         mnCreditarConta = new javax.swing.JMenuItem();
         mnDebitarConta = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenu3 = new javax.swing.JMenu();
+        mnCreditarEmPoupanca = new javax.swing.JMenuItem();
+        mnDebitarSaldoPoupanca = new javax.swing.JMenuItem();
         mnTransferir = new javax.swing.JMenu();
         mnTransferenciaEntreCorrentes = new javax.swing.JMenuItem();
 
@@ -477,38 +478,35 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
             }
         });
         jMenu2.add(mnDebitarConta);
-
-        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
-        jMenuItem5.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        jMenuItem5.setText("Creditar Em Poupança");
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem5);
-
-        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, 0));
-        jMenuItem6.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        jMenuItem6.setText("Debitar da Conta Poupança");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem6);
-
-        jMenuItem7.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
-        jMenuItem7.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        jMenuItem7.setText("Debitar da Poupança");
-        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem7ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem7);
+        jMenu2.add(jSeparator1);
 
         jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Conta Poupança");
+
+        mnCreditarEmPoupanca.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        mnCreditarEmPoupanca.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        mnCreditarEmPoupanca.setText("Creditar Em Poupança");
+        mnCreditarEmPoupanca.setToolTipText("debito da poupança e cretido no saldo da poupança");
+        mnCreditarEmPoupanca.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnCreditarEmPoupancaActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnCreditarEmPoupanca);
+
+        mnDebitarSaldoPoupanca.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, 0));
+        mnDebitarSaldoPoupanca.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        mnDebitarSaldoPoupanca.setText("Debitar da Conta Poupança");
+        mnDebitarSaldoPoupanca.setToolTipText("Debito do Saldo da poupança e cretido na poupança");
+        mnDebitarSaldoPoupanca.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnDebitarSaldoPoupancaActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnDebitarSaldoPoupanca);
+
+        jMenuBar1.add(jMenu3);
 
         mnTransferir.setText("Transferências");
         mnTransferir.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
@@ -574,20 +572,15 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
 
     }//GEN-LAST:event_MnContaCorrenteActionPerformed
 
-    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-
+    private void mnCreditarEmPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnCreditarEmPoupancaActionPerformed
+        contasBancariasController.abrirViewRealizarOperacoesDebitoCredito(EnumTipoOperacoes.CREDITAR_SALDO_POUPANCA, "Transferir da Conta poupança para o saldo da poupança");
         limparSelecaoTabelas();
-    }//GEN-LAST:event_jMenuItem5ActionPerformed
+    }//GEN-LAST:event_mnCreditarEmPoupancaActionPerformed
 
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-
+    private void mnDebitarSaldoPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnDebitarSaldoPoupancaActionPerformed
+        contasBancariasController.abrirViewRealizarOperacoesDebitoCredito(EnumTipoOperacoes.DEBITAR_SALDO_POUPANCA, "Transferir do saldo da poupança para Conta poupança");
         limparSelecaoTabelas();
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
-
-    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-
-        limparSelecaoTabelas();
-    }//GEN-LAST:event_jMenuItem7ActionPerformed
+    }//GEN-LAST:event_mnDebitarSaldoPoupancaActionPerformed
 
     private void mnDebitarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnDebitarContaActionPerformed
         contasBancariasController.abrirViewRealizarOperacoesDebitoCredito(EnumTipoOperacoes.DEBITAR, mnDebitarConta.getText());
@@ -723,12 +716,11 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToolBar jToolBar1;
@@ -743,7 +735,9 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JLabel lgdLaranja;
     private javax.swing.JLabel lgdaranjaTexto;
     private javax.swing.JMenuItem mnCreditarConta;
+    private javax.swing.JMenuItem mnCreditarEmPoupanca;
     private javax.swing.JMenuItem mnDebitarConta;
+    private javax.swing.JMenuItem mnDebitarSaldoPoupanca;
     private javax.swing.JMenuItem mnTransferenciaEntreCorrentes;
     private javax.swing.JMenu mnTransferir;
     private javax.swing.JPanel painelContasBancarias;

@@ -27,6 +27,9 @@ import br.com.contas.exercicio_02.model.classes.OperacaoCredito;
 import br.com.contas.exercicio_02.model.classes.OperacaoDebito;
 import br.com.contas.exercicio_02.model.classes.OperacaoTransferenciaEntreContas;
 import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
+import br.com.contas.exercicio_02.model.classes.OperacaoCreditoSaldoPoupanca;
+import br.com.contas.exercicio_02.model.classes.OperacaoDebitoSaldoPoupanca;
+import br.com.contas.exercicio_02.model.exception.ClassNotPopancaException;
 import br.com.contas.exercicio_02.model.exception.SaldoNegaticoException;
 import br.com.contas.exercicio_02.view.table.CacheContas;
 import br.com.contas.exercicio_02.view.table.CacheOperacoesBancararias;
@@ -135,7 +138,7 @@ public class ContasBancariasController {
         this.operacoesBancariasTableModel.fireTableDataChanged();
     }
 
-// --------------------------------------------
+    // --------------------------------------------
     // MÉTODOS DE OPERAÇÕES BANCÁRIAS
     // --------------------------------------------
     public void abrirOperacoesBancariasView() {
@@ -165,14 +168,49 @@ public class ContasBancariasController {
         try {
             operacaoVaziaNaoInstanciada(op);
         } catch (NuloVazioInesxistenteException ex) {
-            LOGGER.info(ex.getMessage());
+            return;
         }
+
         if (op.getTipoOperacoes() == EnumTipoOperacoes.CREDITAR) {
             cadastrarOperacaoBancariaCredito(op, contasBancariaEditarCadastrar.getContaBancaria());
         } else if (op.getTipoOperacoes() == EnumTipoOperacoes.DEBITAR) {
+            //trocar a operação numero Conta destino para numero conta origem
+            //por que a troca, pois o alvo do debito é o numero da conta de origem 
+            String aux = op.getContaOrigem();
+            op.setContaOrigem(op.getContaDestino());
+            op.setContaDestino(aux);
             cadastrarOperacaoBancariaDebito(op, contasBancariaEditarCadastrar.getContaBancaria());
+        } else if (op.getTipoOperacoes() == EnumTipoOperacoes.CREDITAR_SALDO_POUPANCA) {
+            op.setContaOrigem(op.getContaDestino());
+            cadastrarOperacaoBancariaCreditarSaldoPoupanca(op, contasBancariaEditarCadastrar.getContaBancaria());
+        } else if (op.getTipoOperacoes() == EnumTipoOperacoes.DEBITAR_SALDO_POUPANCA) {
+            op.setContaOrigem(op.getContaDestino());
+            cadastrarOperacaoBancariaDebitarSaldoPoupanca(op, contasBancariaEditarCadastrar.getContaBancaria());
         }
+    }
 
+    private void cadastrarOperacaoBancariaDebitarSaldoPoupanca(OperacaoBancaria op, ContaBancaria contaBancaria) {
+        try {
+            verificarIsPoupanca(contaBancaria);
+            contaBancariaServices.cadastrarOperacaoBancariaDebitarSaldoPoupanca(op, contaBancaria);
+            atualizarCacheDeOperacoes();
+            atualizarCacheDeContasBancarias();
+            Mensagens.informacao("Débito no saldo da poupança realizada com sucesso!");
+        } catch (SaldoNegaticoException | SaldoInsuficienteException | ContaExistenteException | ClassNotPopancaException ex) {
+            Mensagens.error(ex.getMessage());
+        }
+    }
+
+    private void cadastrarOperacaoBancariaCreditarSaldoPoupanca(OperacaoBancaria op, ContaBancaria contaBancaria) {
+        try {
+            verificarIsPoupanca(contaBancaria);
+            contaBancariaServices.cadastrarOperacaoBancariaCreditarSaldoPoupanca(op, contaBancaria);
+            atualizarCacheDeOperacoes();
+            atualizarCacheDeContasBancarias();
+            Mensagens.informacao("Crédito no saldo da poupança realizada com sucesso!");
+        } catch (SaldoNegaticoException | SaldoInsuficienteException | ContaExistenteException | ClassNotPopancaException ex) {
+            Mensagens.error(ex.getMessage());
+        }
     }
 
     public OperacaoBancaria getOperacao(EnumTipoOperacoes tipoConta) {
@@ -183,8 +221,12 @@ public class ContasBancariasController {
                 return new OperacaoDebito();
             case TRANSFERIR:
                 return new OperacaoTransferenciaEntreContas();
+            case CREDITAR_SALDO_POUPANCA:
+                return new OperacaoCreditoSaldoPoupanca();
+            case DEBITAR_SALDO_POUPANCA:
+                return new OperacaoDebitoSaldoPoupanca();
             default:
-                throw new IllegalArgumentException("Classe não encontrada");
+                throw new IllegalArgumentException("Operação encontrada");
         }
     }
 
@@ -194,14 +236,14 @@ public class ContasBancariasController {
             Mensagens.informacao("Operação realizada com sucesso!");
             atualizarCacheDeContasBancarias();
             atualizarCacheDeOperacoes();
-        } catch ( ContaExistenteException | SaldoNegaticoException |  NuloVazioInesxistenteException ex) {
+        } catch (ContaExistenteException | SaldoNegaticoException | NuloVazioInesxistenteException ex) {
             Mensagens.error(ex.getMessage());
         }
     }
 
     private void cadastrarOperacaoBancariaDebito(OperacaoBancaria op, ContaBancaria contaBancaria) {
         try {
-            contaBancariaServices.cadastrarOperacaoBancariaDebito(op, contaBancaria); 
+            contaBancariaServices.cadastrarOperacaoBancariaDebito(op, contaBancaria);
             Mensagens.informacao("Operação realizada com sucesso!");
             atualizarCacheDeContasBancarias();
             atualizarCacheDeOperacoes();
@@ -210,13 +252,15 @@ public class ContasBancariasController {
         }
     }
 
-    public void realizarTransferencia(String contaOrigem, String ContaDestino) {
-
+    private void operacaoVaziaNaoInstanciada(OperacaoBancaria operacaoBancaria) throws NuloVazioInesxistenteException {
+        if (operacaoBancaria == null || operacaoBancaria.getContaDestino() == null) {
+            throw new NuloVazioInesxistenteException();
+        }
     }
 
-    private void operacaoVaziaNaoInstanciada(OperacaoBancaria operacaoBancaria) throws NuloVazioInesxistenteException {
-        if (operacaoBancaria == null) {
-            throw new NuloVazioInesxistenteException();
+    private void verificarIsPoupanca(ContaBancaria contaBancaria) throws ClassNotPopancaException {
+        if (contaBancaria.getTipoConta() != EnumTipoConta.CONTAPOUPANCA) {
+            throw new ClassNotPopancaException("Operação disponivel apenas para contas do tipo poupança!");
         }
     }
 

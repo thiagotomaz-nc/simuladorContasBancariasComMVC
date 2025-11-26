@@ -424,6 +424,9 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
     public ContaBancaria getContaBancaria() {
         return contaBancaria;
     }
+      public OperacaoBancaria getOperacaobancaria() {
+        return operacoesBancarias;
+    }
 
     private void salvarContaBancaria() {
         btnSalvarOperacao.requestFocus();
@@ -443,17 +446,12 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
         }
 
         //salvando uma operaçao que vai ser verificada no service 
-        if(operacoesBancarias.getTipoOperacoes()==EnumTipoOperacoes.CREDITAR){
-            operacoesBancarias.setContaDestino(txtNumeroDaConta.getText());
-            operacoesBancarias.setContaOrigem("000000-0");    
-        }else{
-            operacoesBancarias.setContaDestino("000000-0");
-            operacoesBancarias.setContaOrigem(txtNumeroDaConta.getText()); 
-        }
-       operacoesBancarias.setValorTransferido(valorCreditado);
-       operacoesBancarias.setDataTransferencia(LocalDateTime.now());
+        operacoesBancarias.setContaDestino(txtNumeroDaConta.getText());
+        operacoesBancarias.setContaOrigem("000000-0");
+        operacoesBancarias.setValorTransferido(valorCreditado);
+        operacoesBancarias.setDataTransferencia(LocalDateTime.now());
 
-       dispose();
+        dispose();
     }
 
 }

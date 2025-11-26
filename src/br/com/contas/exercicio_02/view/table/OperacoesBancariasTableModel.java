@@ -65,7 +65,7 @@ public class OperacoesBancariasTableModel extends AbstractTableModel {
             case 5:
                 return op.siglaOperacao();
             case 6:
-                int negativo = (op.getTipoOperacoes()==EnumTipoOperacoes.DEBITAR)?-1:1;
+                int negativo = (op.getTipoOperacoes()==EnumTipoOperacoes.DEBITAR || op.getTipoOperacoes()==EnumTipoOperacoes.DEBITAR_SALDO_POUPANCA)?-1:1;
                 return  ConfigDefaultMoedaBR.moeda_foratada_brl(ConfigDefaultMoedaBR.ArredondarValor(op.getValorTransferido()*negativo));
             default:
                 throw new IndexOutOfBoundsException("erro nas colunas");

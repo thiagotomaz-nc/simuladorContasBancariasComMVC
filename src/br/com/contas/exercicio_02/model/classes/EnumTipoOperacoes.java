@@ -10,5 +10,5 @@ package br.com.contas.exercicio_02.model.classes;
  * @author Thiago Tomaz
  */
 public enum EnumTipoOperacoes {
-    CREDITAR, DEBITAR, TRANSFERIR
+    CREDITAR, DEBITAR, TRANSFERIR, CREDITAR_SALDO_POUPANCA, DEBITAR_SALDO_POUPANCA
 }

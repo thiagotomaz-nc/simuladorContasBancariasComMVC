@@ -105,15 +105,15 @@ public class ContaBancariaServices {
 
     private void creditarContaBancaria(ContaBancaria cb, OperacaoBancaria op) throws ContaExistenteException {
 
-        op.setCodigoOperacao(chaveDasOperacoes());
-        consultarOperacaoExistente(op);
+        op.setCodigoOperacao(gerarChaveDasOperacoes());
+        consultarOperacaoExistente(op.getCodigoOperacao());
 
         cb.crediditar(op.getValorTransferido());
         operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
 
     }
 
-    private String chaveDasOperacoes() {
+    private String gerarChaveDasOperacoes() {
         Long millisegundos = System.currentTimeMillis();
         return millisegundos + "";
     }
@@ -133,46 +133,80 @@ public class ContaBancariaServices {
         saldoPositivo(op.getValorTransferido());
 
         if (contaBancaria != null) {
-            verificarSaldoSuficiente(contaBancaria, op.getValorTransferido());
+
+            verificarSaldoSuficiente(getSaldo(contaBancaria), op.getValorTransferido());
             debitarDaConta(contaBancaria, op);
         } else {
             throw new NuloVazioInesxistenteException("Conta Bancaria Inexistente");
         }
 
     }
-    
+
     //=============================================
     //*** OPERAÇÕES DE DÉBITO
     //=============================================
     private void debitarDaConta(ContaBancaria contaBancaria, OperacaoBancaria op) throws ContaExistenteException {
-        op.setCodigoOperacao(chaveDasOperacoes());
-        consultarOperacaoExistente(op);
+        op.setCodigoOperacao(gerarChaveDasOperacoes());
+        consultarOperacaoExistente(op.getCodigoOperacao());
         contaBancaria.debitar(op.getValorTransferido());
         operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
 
     }
 
-    public void verificarSaldoSuficiente(ContaBancaria contabancaria, double valor) throws SaldoInsuficienteException {
-
-        if (contabancaria.getTipoConta() == EnumTipoConta.CONTACORRENTE) {
-            if ((contabancaria.getSaldo() + contabancaria.getInfoAdicionalConta()) < valor) {
-                throw new SaldoInsuficienteException("O valor é maior que o saldo! Débito não realizado!");
-            }
-        }else if(contabancaria.getTipoConta() == EnumTipoConta.CONTAPOUPANCA){
-         if (contabancaria.getSaldo() < valor) {
-                throw new SaldoInsuficienteException("O valor é maior que o saldo! Débito não realizado!");
-            }
+    private double getSaldo(ContaBancaria contaBancaria) {
+        if (contaBancaria.getTipoConta() == EnumTipoConta.CONTACORRENTE) {
+            return contaBancaria.getSaldo() + contaBancaria.getInfoAdicionalConta();
         }
+
+        return contaBancaria.getSaldo();
     }
 
-    private void consultarOperacaoExistente(OperacaoBancaria op) throws ContaExistenteException {
-        if (operacoesBancariasRepositorio.consultarOperacaoExistente(op.getCodigoOperacao())) {
+    public void verificarSaldoSuficiente(double saldo, double valor) throws SaldoInsuficienteException {
+
+        if (saldo < valor) {
+            throw new SaldoInsuficienteException("O valor é maior que o saldo! Débito não realizado!");
+        }
+
+    }
+
+    private void consultarOperacaoExistente(String codigoOperacao) throws ContaExistenteException {
+        if (operacoesBancariasRepositorio.consultarOperacaoExistente(codigoOperacao)) {
             throw new ContaExistenteException("Operacão já existe no sistema!");
         }
     }
+
+    public void cadastrarOperacaoBancariaCreditarSaldoPoupanca(OperacaoBancaria op, ContaBancaria contaBancaria) throws SaldoNegaticoException, SaldoInsuficienteException, ContaExistenteException {
+        saldoPositivo(op.getValorTransferido());
+        verificarSaldoSuficiente(getSaldo(contaBancaria), contaBancaria.getInfoAdicionalConta());
+
+        op.setCodigoOperacao(gerarChaveDasOperacoes());
+        consultarOperacaoExistente(op.getCodigoOperacao());
+        
+        contaBancaria.debitar(op.getValorTransferido());
+        contaBancaria.setInfoAdicionalConta(contaBancaria.getInfoAdicionalConta()+op.getValorTransferido());
+        
+        operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
+    }
+    
+    public void cadastrarOperacaoBancariaDebitarSaldoPoupanca(OperacaoBancaria op, ContaBancaria contaBancaria) throws SaldoNegaticoException, SaldoInsuficienteException, ContaExistenteException {
+        saldoPositivo(op.getValorTransferido());
+        verificarSaldoSuficiente(contaBancaria.getInfoAdicionalConta(),getSaldo(contaBancaria));
+
+        op.setCodigoOperacao(gerarChaveDasOperacoes());
+        consultarOperacaoExistente(op.getCodigoOperacao());
+        
+        contaBancaria.setInfoAdicionalConta(contaBancaria.getInfoAdicionalConta() - op.getValorTransferido());
+        contaBancaria.crediditar(op.getValorTransferido());
+        
+        operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
+    }
+        
+    
     //*************************************
     //*** FIM DAS OPERACOES
     //*************************************
+
+
 }
 
 /*

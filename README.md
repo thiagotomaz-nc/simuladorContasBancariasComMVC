@@ -1,11 +1,13 @@
 ## 🔧 Funcionalidades pendentes
 
-O principal Objetivo é enxugar o código o máximo possível, para isso, será utilizado, além dos conceitos adquiridos em sala de aula, o conceito de arquitetura em camadas MVC;
+O principal Objetivo é enxugar o código o máximo possível, para isso, será utilizado, além dos conceitos adquiridos em sala de aula,
+o conceito de arquitetura em camadas MVC;
 
 - [X] Utilizando polimorfismo - elimina-se o uso de "ifs" para as classes;
 - [X] Utilizando o gerenciamento de arrayList ou hashMap por na camada repository;
 - [x] Utilizando formatação de moedas melhoramos a interação do usuário com o sistema.
-- [x] Unificando os tipos de contas bancarias em um só lista do tipo hashMap facilitamos a distinção das contas pelo seu número de conta, garantindo que exista uma conta para cada número de conta.
+- [x] Unificando os tipos de contas bancarias em um só lista do tipo hashMap facilitamos a distinção
+- [ ] das contas pelo seu número de conta, garantindo que exista uma conta para cada número de conta.
 
 ## Resumo do MVC ##
 
@@ -19,7 +21,8 @@ Sendo assim, neste projeto foi utilizado o padrão do MVC para melhora-lo.
     - Essa camada não tem o poder de tomar decisões, essa responsabilidade é do controller;
 
 # Controller
-    - O cérebro da aplicação. Ele é o responsável por gerenciar os fluxos das views, ele decide se vai abrir ou não uma janela, se vai chamar um metodo do service, ele é quem decide!
+    - O cérebro da aplicação. Ele é o responsável por gerenciar os fluxos das views;
+    - Ele decide se vai abrir ou não uma janela, se vai chamar um metodo do service, ele é quem decide!
     - Ele também é responsável por se conectar a um service;
 
 # Service

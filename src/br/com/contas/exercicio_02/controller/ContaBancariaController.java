@@ -30,15 +30,20 @@ import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
 import br.com.contas.exercicio_02.model.classes.OperacaoCreditoSaldoPoupanca;
 import br.com.contas.exercicio_02.model.classes.OperacaoDebitoSaldoPoupanca;
 import br.com.contas.exercicio_02.model.exception.ClassNotPopancaException;
+import br.com.contas.exercicio_02.model.exception.ContasDestinoOrigemIguaisException;
 import br.com.contas.exercicio_02.model.exception.SaldoNegaticoException;
+import br.com.contas.exercicio_02.view.TransferenciaEntreContasBancariasIG;
 import br.com.contas.exercicio_02.view.table.CacheContas;
 import br.com.contas.exercicio_02.view.table.CacheOperacoesBancararias;
 import br.com.contas.exercicio_02.view.table.ContaBancariaTableModel;
 import br.com.contas.exercicio_02.view.table.OperacoesBancariasTableModel;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -46,13 +51,13 @@ import javax.swing.JOptionPane;
  * @author Thiago Tomaz
  */
 //Artigo utilizado par ao padrão MVCS https://www.devmedia.com.br/padrao-mvc-java-magazine/21995
-public class ContasBancariasController {
+public class ContaBancariaController {
 
     private final ContaBancariaServices contaBancariaServices;
     private final CacheContas cacheContas;
     private JFrame frame;
     private ContaBancariaTableModel contaBancariaModeloTable;
-    private static final Logger LOGGER = Logger.getLogger(ContasBancariasController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ContaBancariaController.class.getName());
     private EnumAcaoView acaoView;
 
     private OperacoesBancariasTableModel operacoesBancariasTableModel;
@@ -61,7 +66,7 @@ public class ContasBancariasController {
     // por que utilizar o static, pois sem o static teria que ter um Logger novo para cada objeto, o que não faz sentido.
     // Logger não precisa saber quantos objetos existem.
     // Ele só precisa saber qual classe está registrando mensagens.
-    public ContasBancariasController(JFrame parent) {
+    public ContaBancariaController(JFrame parent) {
         this.contaBancariaServices = new ContaBancariaServices();
         this.cacheContas = new CacheContas();
         this.frame = parent;
@@ -389,6 +394,17 @@ public class ContasBancariasController {
         }
     }
 
+    public void validarViewContaOrigemDestino(String text, TransferenciaEntreContasBancariasIG janela, int indiceConta) {
+
+        ContaBancaria contaBancaria = consultarContaBancariaNumeroDaConta(text);
+
+        if (contaBancaria != null) {
+            janela.isContaInValida(contaBancaria, "/resources/icones_32/check.png", indiceConta);
+        } else {
+            janela.isContaInValida(contaBancaria, "", indiceConta);
+        }
+    }
+
     private void verificarTotalContasCadastradas() throws ListasVaziaException {
         if (cacheContas.getCacheContasBancarias().size() == 0) {
             throw new ListasVaziaException("Cadastre 1 conta para efetuar alguma operação báncaria");
@@ -399,6 +415,55 @@ public class ContasBancariasController {
         if (conta == null) {
             throw new NuloVazioInesxistenteException();
         }
+    }
+
+    public void abrirViewTransferenciaEntreContas(EnumTipoOperacoes enumTipoOperacoes, String text) {
+
+        TransferenciaEntreContasBancariasIG transferenciaEntreContasBancariasIG = new TransferenciaEntreContasBancariasIG(frame, true, this, text);
+        transferenciaEntreContasBancariasIG.setVisible(true);
+
+        ContaBancaria[] conta = transferenciaEntreContasBancariasIG.getContasBancariasOrigemDestino();
+
+        if (conta != null) {
+            realizarTransferenciaEntreContas(conta, transferenciaEntreContasBancariasIG.getValorTransferencia());
+        }
+
+    }
+
+    private void realizarTransferenciaEntreContas(ContaBancaria[] conta, double valorTransferencia) {
+        try {
+            OperacaoBancaria op = getOperacao(EnumTipoOperacoes.TRANSFERIR);
+            op.setValorTransferido(valorTransferencia);
+            op.setDataTransferencia(LocalDateTime.now());
+            op.setContaOrigem(conta[0].getNumeroConta());
+            op.setContaDestino(conta[1].getNumeroConta());
+            verificarContaOrigemDestinoIguais(op);
+
+            contaBancariaServices.transferenciaEntreContas(op, conta);
+
+            atualizarCacheDeOperacoes();
+            atualizarCacheDeContasBancarias();
+            Mensagens.informacao("Transferencia entre as conta: [ " + conta[0].getNumeroConta() + " : " + conta[1].getNumeroConta() + " ] realizada com sucesso!");
+        } catch (SaldoNegaticoException | SaldoInsuficienteException | ContaExistenteException | ContasDestinoOrigemIguaisException ex) {
+            Mensagens.error(ex.getMessage());
+        }
+    }
+
+    private void verificarContaOrigemDestinoIguais(OperacaoBancaria op) throws ContasDestinoOrigemIguaisException {
+        if (op.getContaOrigem().trim().equals(op.getContaDestino())) {
+            throw new ContasDestinoOrigemIguaisException("As contas de Origem e destino não podem ser a mesma!");
+        }
+
+    }
+
+    public void consultarViewContaBancariaNumeroDaConta(String text, ContaBancariaDepositarDebitar janela) {
+        ContaBancaria contaBancaria = consultarContaBancariaNumeroDaConta(text);
+        if (contaBancaria != null) {
+            janela.contaValida(contaBancaria);
+        } else {
+            janela.contaInvalida(contaBancaria);
+        }
+
     }
 
 }

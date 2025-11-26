@@ -2,8 +2,31 @@
 
 O principal Objetivo é enxugar o código o máximo possível, para isso, será utilizado, além dos conceitos adquiridos em sala de aula, o conceito de arquitetura em camadas MVC;
 
-- [ ] Utilizando polimorfismo - elimina-se o uso de "ifs" para as classes;
-- [ ] Utilizando passagem de arrayList ou hashMap por referencia eliminamos erros na sicronização nas listas;
-- [ ] Utilizando formatação de moedas melhoramos a interação do usuário com o sistema.
-- [ ] Unificando os tipos de contas bancarias em um só lista do tipo hashMap facilitamos a distinção das contas pelo seu número de conta, garantindo que exista uma conta para cada número de conta.
+- [X] Utilizando polimorfismo - elimina-se o uso de "ifs" para as classes;
+- [X] Utilizando o gerenciamento de arrayList ou hashMap por na camada repository;
+- [x] Utilizando formatação de moedas melhoramos a interação do usuário com o sistema.
+- [x] Unificando os tipos de contas bancarias em um só lista do tipo hashMap facilitamos a distinção das contas pelo seu número de conta, garantindo que exista uma conta para cada número de conta.
 
+## Resumo do MVC ##
+
+## Implementação com MVC
+
+- A busca pela organização de um código é um dos principais motivos pela adoção de arquitetura. Ela tanto auxilia na organizaçao, quanto na manutenção do código.
+Sendo assim, neste projeto foi utilizado o padrão do MVC para melhora-lo.
+
+# view 
+    - Camada responsável pelo interface gráfica: Netbeans com Swing;
+
+# Controller
+    - O cérebro da aplicação. Ele é o responsável por gerenciar os fluxos das views;
+    - Ele também é responsável por se conectar a um service;
+
+# Service
+    - Essa camada é a responsável pelas regras de négocio, saldo negativo, positivo, Transferencias entre contas, etc. 
+    - Ele se conecta com o repository.
+
+# Repository
+    - Camada responsável pelo armazenamento dos dados, neste projeto as listas com os dados das contas;
+    - Futuramente com os dados armazenados em um banco de dados.
+
+Cada camada tem sua responsabilidade, em outras palavra, as demais devem confiar nela para evitar redundancia de código.

@@ -143,7 +143,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnTransferirActionPerformed"/>
           </Events>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="mnTransferenciaEntreCorrentes">
+            <MenuItem class="javax.swing.JMenuItem" name="mnTransferenciaEntreContas">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="F8"/>
@@ -154,7 +154,7 @@
                 <Property name="text" type="java.lang.String" value="Tranfer&#xea;ncia entre Contas"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnTransferenciaEntreCorrentesActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnTransferenciaEntreContasActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -323,7 +323,7 @@
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="cbxTiposContas" min="-2" pref="158" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="257" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -458,21 +458,8 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="lgdContaNoVermelho" min="-2" pref="20" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="lgdContaNoVermelhoTexto" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="lgdAmarela" min="-2" pref="20" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="lgdAmarelaTexto" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="lgdLaranja" min="-2" pref="20" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="lgdaranjaTexto" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="180" max="32767" attributes="0"/>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace pref="991" max="32767" attributes="0"/>
                   <Component id="lgdHorario" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="lgdDataHora" min="-2" pref="130" max="-2" attributes="0"/>
@@ -482,26 +469,13 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="2" attributes="0">
-                      <Component id="lgdContaNoVermelho" alignment="2" min="-2" pref="20" max="-2" attributes="0"/>
-                      <Component id="lgdContaNoVermelhoTexto" alignment="2" max="32767" attributes="0"/>
-                      <Component id="lgdAmarela" alignment="2" max="32767" attributes="0"/>
-                      <Component id="lgdAmarelaTexto" alignment="2" max="32767" attributes="0"/>
-                      <Component id="jLabel3" alignment="2" max="32767" attributes="0"/>
-                      <Component id="lgdLaranja" alignment="2" max="32767" attributes="0"/>
-                      <Component id="lgdaranjaTexto" alignment="2" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
-              </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="11" pref="11" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
                       <Component id="lgdDataHora" alignment="1" max="32767" attributes="0"/>
                       <Component id="lgdHorario" alignment="1" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="6" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -522,56 +496,6 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" value="21-10-2025"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lgdContaNoVermelho">
-          <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="0" green="0" red="ff" type="rgb"/>
-            </Property>
-            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;p&gt;&lt;b&gt;Conta poupan&#xe7;a:&lt;/b&gt; Ser&#xe1; bloqueado a transfer&#xea;ncia quando o saldo estiver zerado!&lt;/p&gt;&#xa;&lt;p&gt;&lt;b&gt;Conta Corrente:&lt;/b&gt; Ser&#xe1; bloqueado a transf&#xea;rencia quando o saldo usar todo o  limite de cr&#xe9;dito;&lt;/p&gt;&lt;/html&gt;"/>
-            <Property name="opaque" type="boolean" value="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lgdContaNoVermelhoTexto">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Bloqueada para d&#xe9;bito e transfer&#xea;ncia"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lgdAmarela">
-          <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="0" green="ff" red="ff" type="rgb"/>
-            </Property>
-            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Conta Corrente:&lt;/b&gt; Legenda ativa quando o saldo for todo utilizado ( 0 ) e come&#xe7;ar a utilizar o limite de cr&#xe9;dito da conta.&lt;/html&gt;"/>
-            <Property name="opaque" type="boolean" value="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lgdAmarelaTexto">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Utilizando o limite de cr&#xe9;dito da  conta"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel3">
-          <Properties>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Tahoma" size="11" style="1"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="Legendas:"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lgdLaranja">
-          <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="0" green="c8" id="orange" palette="1" red="ff" type="palette"/>
-            </Property>
-            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Conta Poupan&#xe7;a:&lt;/b&gt; Legenda ativa quando o saldo da conta poupan&#xe7;a estiver zerado.&lt;/html&gt;"/>
-            <Property name="opaque" type="boolean" value="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lgdaranjaTexto">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Bloqueada para transfer&#xea;ncia SP-&gt;SC"/>
           </Properties>
         </Component>
       </SubComponents>

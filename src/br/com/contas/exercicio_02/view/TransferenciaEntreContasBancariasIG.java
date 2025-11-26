@@ -7,10 +7,30 @@
  */
 package br.com.contas.exercicio_02.view;
 
+import br.com.contas.exercicio_02.controller.ContaBancariaController;
+import br.com.contas.exercicio_02.model.classes.ContaBancaria;
+import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
+import br.com.contas.exercicio_02.model.exception.CampoSizeInvalidoException;
+import br.com.contas.exercicio_02.model.exception.CaractereInvalidoEspacoBrancoException;
+import br.com.contas.exercicio_02.model.exception.DoubleFormatClassCastException;
+import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultMoedaBR;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
+import br.com.contas.exercicio_02.model.util.ConverterDouble;
+import br.com.contas.exercicio_02.model.util.Mensagens;
+import br.com.contas.exercicio_02.model.util.ValidarValores;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -21,35 +41,22 @@ public class TransferenciaEntreContasBancariasIG extends javax.swing.JDialog {
     /**
      * Creates new form TransferenciaEntreContasCorrentes
      */
-    private String numeroContaOrigem, numeroContaDestino;
-    private double valorTransferencia;
-
-    public TransferenciaEntreContasBancariasIG(java.awt.Frame parent, boolean modal, String iconeLaunch, int tipoTransferencia) {
+    private ContaBancariaController contaBancariaController;
+    private ContaBancaria[] contaBancarias = new ContaBancaria[2];
+    private double valorTransferencia = 0;
+    
+    public TransferenciaEntreContasBancariasIG(java.awt.Frame parent, boolean modal, ContaBancariaController contaBancariaController, String titulo) {
         super(parent, modal);
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(iconeLaunch));
-        numeroContaDestino = null;
-        numeroContaOrigem = null;
-        valorTransferencia = 0;
-
-        switch (tipoTransferencia) {
-            case 1:
-                setTitle("Transferir de conta corrente para corrente");
-                break;
-            case 2:
-                setTitle("Transferir de conta corrente para poupança");
-                break;
-            case 3:
-                setTitle("Transferir de conta poupança para corrente");
-                break;
-            case 4:
-                setTitle("Transferir de conta poupança para poupança");
-                break;
-            default:
-                setTitle("Realizar uma transferência");
-                break;
-        }
-
+        setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
+        
+        this.contaBancariaController = contaBancariaController;
+        NumberFormatter numberFormatter = new NumberFormatter(ConfigDefaultMoedaBR.moeda_default_br());
+        setAlwaysOnTop(false);
+        
+        txtValorTransferencia.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
+        
+        setTitle(titulo);
     }
 
     /**
@@ -71,12 +78,22 @@ public class TransferenciaEntreContasBancariasIG extends javax.swing.JDialog {
         txtValorTransferencia = new javax.swing.JFormattedTextField();
         jButton2 = new javax.swing.JButton();
         btnSalvarEditar = new javax.swing.JButton();
+        lblContaDestinoIcone = new javax.swing.JLabel();
+        lblContaOrigemIcone = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Transferência entre contas correntes");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Valor:");
 
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel4.setText("Conta de origem:");
 
@@ -90,7 +107,7 @@ public class TransferenciaEntreContasBancariasIG extends javax.swing.JDialog {
             ex.printStackTrace();
         }
         txtNumeroDaContaOrigem.setFocusTraversalPolicyProvider(true);
-        txtNumeroDaContaOrigem.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtNumeroDaContaOrigem.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(102, 102, 102));
@@ -102,20 +119,22 @@ public class TransferenciaEntreContasBancariasIG extends javax.swing.JDialog {
             ex.printStackTrace();
         }
         txtNumeroDaContaDestino.setFocusTraversalPolicyProvider(true);
-        txtNumeroDaContaDestino.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("Conta de destino:");
-
-        txtValorTransferencia.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(java.text.NumberFormat.getCurrencyInstance())));
-        txtValorTransferencia.setText("R$ 0,00");
-        txtValorTransferencia.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        txtValorTransferencia.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtValorTransferenciaActionPerformed(evt);
+        txtNumeroDaContaDestino.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtNumeroDaContaDestino.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ed(evt);
             }
         });
 
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel7.setText("Conta de destino:");
+
+        txtValorTransferencia.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        txtValorTransferencia.setText("0,00");
+        txtValorTransferencia.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icones_32/cancel.png"))); // NOI18N
         jButton2.setText("Cancelar");
         jButton2.setMaximumSize(new java.awt.Dimension(121, 28));
@@ -126,8 +145,9 @@ public class TransferenciaEntreContasBancariasIG extends javax.swing.JDialog {
             }
         });
 
+        btnSalvarEditar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnSalvarEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icones_32/check.png"))); // NOI18N
-        btnSalvarEditar.setText("Realizar transferncia");
+        btnSalvarEditar.setText("Transferir");
         btnSalvarEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalvarEditarActionPerformed(evt);
@@ -139,110 +159,104 @@ public class TransferenciaEntreContasBancariasIG extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(7, 7, 7)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(71, 131, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtNumeroDaContaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel6)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtNumeroDaContaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 105, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtValorTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnSalvarEditar)))))
-                .addContainerGap(107, Short.MAX_VALUE))
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSalvarEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(txtNumeroDaContaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(11, 11, 11)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel6)
+                                .addComponent(txtValorTransferencia, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                                .addComponent(jLabel5)
+                                .addComponent(txtNumeroDaContaDestino)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblContaDestinoIcone, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblContaOrigemIcone, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(11, 11, 11))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(34, 34, 34)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtNumeroDaContaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(2, 2, 2)
-                .addComponent(jLabel5)
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNumeroDaContaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblContaOrigemIcone, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(4, 4, 4)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(lblContaDestinoIcone, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNumeroDaContaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(1, 1, 1)
+                .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtNumeroDaContaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(2, 2, 2)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtValorTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtValorTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSalvarEditar)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtValorTransferenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtValorTransferenciaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtValorTransferenciaActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
-        dispose();
+        fecharJanela();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btnSalvarEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarEditarActionPerformed
-
-        btnSalvarEditar.hasFocus();
-
-        if (!txtNumeroDaContaOrigem.getText().trim().toUpperCase().isEmpty() && !txtNumeroDaContaDestino.getText().trim().isEmpty() && !txtValorTransferencia.getText().trim().isEmpty()) {
-            if (txtNumeroDaContaOrigem.getText().trim().length() == 8 && txtNumeroDaContaDestino.getText().trim().length() == 8) {
-
-                //implementar o NumberFormat para trabalhar com moedas
-                String tempValor = txtValorTransferencia.getText().trim().replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".");
-
-                double valorTransferencia = Double.parseDouble(tempValor);
-
-                if (valorTransferencia == 0) {
-                    valorTransferencia = 0;
-                }
-
-                // só existe uma transferencia acima de 0 reais.
-                if (valorTransferencia > 0) {
-                    numeroContaOrigem = txtNumeroDaContaOrigem.getText().trim();
-                    numeroContaDestino = txtNumeroDaContaDestino.getText().trim();
-                    this.valorTransferencia = valorTransferencia;
-
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Por favor, preencha o saldo com valor acima de R$ 0 reais!");
-
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "O campo numero da conta tem que estar completamente preenchido");
-                txtNumeroDaContaOrigem.setBorder(new LineBorder(Color.RED, 2));
-                txtNumeroDaContaDestino.setBorder(new LineBorder(Color.RED, 2));
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Por favor, preencha o nome e o saldo da conta!");
+        
+        btnSalvarEditar.requestFocus();
+        
+        try {
+            ValidarValores.isNullEmpity(txtNumeroDaContaOrigem.getText(), "Campo número de origem vazio");
+            ValidarValores.isNullEmpity(txtNumeroDaContaDestino.getText(), "Campo número de Destino vazio");
+            ValidarValores.isNullEmpity(txtValorTransferencia.getValue().toString(), "Campo valor transferir vazio");
+            
+            ValidarValores.caractereInvalidoEspacoBranco(txtNumeroDaContaOrigem.getText());
+            ValidarValores.caractereInvalidoEspacoBranco(txtNumeroDaContaDestino.getText());
+            ValidarValores.validarTamanho(txtNumeroDaContaDestino.getText().trim(), EnumValidacaoCampos.NUMERO_CONTA);
+            ValidarValores.validarTamanho(txtNumeroDaContaOrigem.getText().trim(), EnumValidacaoCampos.NUMERO_CONTA);
+            
+            valorTransferencia = ConverterDouble.converterObjectToDouble(txtValorTransferencia.getValue());
+            
+        } catch (NuloVazioInesxistenteException | DoubleFormatClassCastException | CaractereInvalidoEspacoBrancoException | CampoSizeInvalidoException ex) {
+            Mensagens.error(ex.getMessage());
         }
+        
+        consultarContaBancariaOrigemDestino(txtNumeroDaContaOrigem.getText(), 0);
+        consultarContaBancariaOrigemDestino(txtNumeroDaContaDestino.getText(), 1);
+                
+        dispose();
+        
+
     }//GEN-LAST:event_btnSalvarEditarActionPerformed
+
+    private void ed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ed
+        
+    }//GEN-LAST:event_ed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        fecharJanela();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -256,33 +270,48 @@ public class TransferenciaEntreContasBancariasIG extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel lblContaDestinoIcone;
+    private javax.swing.JLabel lblContaOrigemIcone;
     private javax.swing.JFormattedTextField txtNumeroDaContaDestino;
     private javax.swing.JFormattedTextField txtNumeroDaContaOrigem;
     private javax.swing.JFormattedTextField txtValorTransferencia;
     // End of variables declaration//GEN-END:variables
 
-    public String getNumeroContaOrigem() {
-        return numeroContaOrigem;
-    }
-
-    public void setNumeroContaOrigem(String numeroContaOrigem) {
-        this.numeroContaOrigem = numeroContaOrigem;
-    }
-
-    public String getNumeroContaDestino() {
-        return numeroContaDestino;
-    }
-
-    public void setNumeroContaDestino(String numeroContaDestino) {
-        this.numeroContaDestino = numeroContaDestino;
-    }
-
     public double getValorTransferencia() {
         return valorTransferencia;
     }
-
+    
     public void setValorTransferencia(double valorTransferencia) {
         this.valorTransferencia = valorTransferencia;
     }
-
+    
+    public ContaBancaria[] getContasBancariasOrigemDestino() {
+        return contaBancarias;
+    }
+    
+    private void setContaBancaria(ContaBancaria conta, int indice) {
+        this.contaBancarias[indice] = conta;
+    }
+    
+    private void consultarContaBancariaOrigemDestino(String codigoContaBancaria, int indiceConta) {
+        getConsultarContaBancaria(codigoContaBancaria, indiceConta);
+    }
+    
+    private void getConsultarContaBancaria(String codigoContaBancaria, int indiceConta) {
+        contaBancariaController.validarViewContaOrigemDestino(codigoContaBancaria, this, indiceConta);
+    }
+    
+    private void fecharJanela() {
+        contaBancarias = null;
+        dispose();
+    }
+    
+    public void isContaInValida(ContaBancaria conta, String icone, int indice) {
+        setContaBancaria(conta, indice);
+        if (indice == 0) {
+            lblContaOrigemIcone.setIcon(new ImageIcon(getClass().getResource(icone)));
+        } else {
+            lblContaDestinoIcone.setIcon(new ImageIcon(getClass().getResource(icone)));
+        }
+    }
 }

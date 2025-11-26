@@ -5,7 +5,7 @@
  */
 package br.com.contas.exercicio_02.view;
 
-import br.com.contas.exercicio_02.controller.ContasBancariasController;
+import br.com.contas.exercicio_02.controller.ContaBancariaController;
 
 /**
  *
@@ -16,9 +16,9 @@ public class OperacoesBancariasView extends javax.swing.JDialog {
     /**
      * Creates new form OperacoesBancariasView
      */
-    private ContasBancariasController contasBancariasController;
+    private ContaBancariaController contasBancariasController;
 
-    public OperacoesBancariasView(java.awt.Frame parent, boolean modal, ContasBancariasController contasBancariasController) {
+    public OperacoesBancariasView(java.awt.Frame parent, boolean modal, ContaBancariaController contasBancariasController) {
         super(parent, modal);
         initComponents();
         this.contasBancariasController = contasBancariasController;

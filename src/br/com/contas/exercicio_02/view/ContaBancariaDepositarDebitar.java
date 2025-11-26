@@ -7,8 +7,7 @@
  */
 package br.com.contas.exercicio_02.view;
 
-import br.com.contas.exercicio_02.model.classes.EnumTipoOperacoes;
-import br.com.contas.exercicio_02.controller.ContasBancariasController;
+import br.com.contas.exercicio_02.controller.ContaBancariaController;
 import br.com.contas.exercicio_02.model.classes.ContaBancaria;
 import br.com.contas.exercicio_02.model.classes.OperacaoBancaria;
 import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
@@ -16,19 +15,16 @@ import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException
 import br.com.contas.exercicio_02.model.exception.CampoSizeInvalidoException;
 import br.com.contas.exercicio_02.model.exception.CaractereInvalidoEspacoBrancoException;
 import br.com.contas.exercicio_02.model.exception.DoubleFormatClassCastException;
+import br.com.contas.exercicio_02.model.util.ConfigDefaultMoedaBR;
 import br.com.contas.exercicio_02.model.util.ConfigDefaultSistema;
 import br.com.contas.exercicio_02.model.util.ConverterDouble;
 import br.com.contas.exercicio_02.model.util.Mensagens;
 import br.com.contas.exercicio_02.model.util.ValidarValores;
-import java.awt.Color;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.border.LineBorder;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -44,10 +40,10 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
     private int tipoOperacao;
 
     private OperacaoBancaria operacoesBancarias;
-    private ContasBancariasController contasBancariasController;
+    private ContaBancariaController contasBancariasController;
     private ContaBancaria contaBancaria;
 
-    public ContaBancariaDepositarDebitar(JFrame parent, boolean modal, OperacaoBancaria operacoesBancarias, String titulo, ContasBancariasController contasBancariasController, ContaBancaria contaBancaria) {
+    public ContaBancariaDepositarDebitar(JFrame parent, boolean modal, OperacaoBancaria operacoesBancarias, String titulo, ContaBancariaController contasBancariasController, ContaBancaria contaBancaria) {
         super(parent, modal);
         initComponents();
         setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
@@ -61,6 +57,11 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
 
         lgdDepositoDebito.setText("Valor a " + this.operacoesBancarias.getDescricaoOperacao() + ":");
 
+        NumberFormatter numberFormatter = new NumberFormatter(ConfigDefaultMoedaBR.moeda_default_br());
+        setAlwaysOnTop(false);
+
+        txtValorCreditoDebito.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
+        txtValorCreditoDebito.setValue(0.00);
         //objetivo do polimorfismo eliminar tudo isso 
         /* switch (tipoOperacao) {
             case 1:
@@ -403,29 +404,38 @@ public class ContaBancariaDepositarDebitar extends javax.swing.JDialog {
         btnPesquisar.requestFocus();
         boolean exibir = false;
 
-        contaBancaria = contasBancariasController.consultarContaBancariaNumeroDaConta(txtNumeroDaConta.getText());
+        contasBancariasController.consultarViewContaBancariaNumeroDaConta(txtNumeroDaConta.getText(), this);
 
-        if (contaBancaria != null) {
-            lblNumeroConta.setText(contaBancaria.getNumeroConta());
-            lblTipoConta.setText(contaBancaria.getDescricaoConta());
-            lblTitularConta.setText(contaBancaria.getNome());
-            exibir = true;
-            txtValorCreditoDebito.requestFocus();
-        } else {
-            lblNumeroConta.setText("-");
-            lblTipoConta.setText("-");
-            lblTitularConta.setText("-");
-        }
 
-        btnSalvarOperacao.setEnabled(exibir);
-        txtValorCreditoDebito.setEnabled(exibir);
     }
 
     public ContaBancaria getContaBancaria() {
         return contaBancaria;
     }
-      public OperacaoBancaria getOperacaobancaria() {
+
+    public OperacaoBancaria getOperacaobancaria() {
         return operacoesBancarias;
+    }
+
+    public void contaValida(ContaBancaria conta) {
+        this.contaBancaria = conta;
+        lblNumeroConta.setText(contaBancaria.getNumeroConta());
+        lblTipoConta.setText(contaBancaria.getDescricaoConta());
+        lblTitularConta.setText(contaBancaria.getNome());
+        
+        btnSalvarOperacao.setEnabled(true);
+        txtValorCreditoDebito.setEnabled(true);
+        txtValorCreditoDebito.requestFocus();
+        
+    }
+
+    public void contaInvalida(ContaBancaria contaBancaria) {
+        contaBancaria=contaBancaria;
+        lblNumeroConta.setText("-");
+        lblTipoConta.setText("-");
+        lblTitularConta.setText("-");
+        btnSalvarOperacao.setEnabled(false);
+        txtValorCreditoDebito.setEnabled(false);
     }
 
     private void salvarContaBancaria() {

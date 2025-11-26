@@ -7,7 +7,7 @@
  */
 package br.com.contas.exercicio_02.main;
 
-import br.com.contas.exercicio_02.controller.ContasBancariasController;
+import br.com.contas.exercicio_02.controller.ContaBancariaController;
 import br.com.contas.exercicio_02.model.classes.EnumTipoConta;
 import br.com.contas.exercicio_02.model.enums.EnumValidacaoCampos;
 import br.com.contas.exercicio_02.model.exception.NuloVazioInesxistenteException;
@@ -42,7 +42,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     /**
      * Creates new form Principal
      */
-    private ContasBancariasController contasBancariasController;
+    private ContaBancariaController contasBancariasController;
 
     private TableColumnModel contaBancariaModelColumn;
 
@@ -59,7 +59,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         setIconImage(ConfigDefaultSistema.getICONE_SISTEMA());
 
         //instanciando os objeto controlle
-        contasBancariasController = new ContasBancariasController(this);
+        contasBancariasController = new ContaBancariaController(this);
 
         //atribuindo os models as suas respectivas tabelas;
         tabelaContabancaria.setModel(contasBancariasController.getContaBancariaModeloTable());
@@ -120,13 +120,6 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         jPanel2 = new javax.swing.JPanel();
         lgdHorario = new javax.swing.JLabel();
         lgdDataHora = new javax.swing.JLabel();
-        lgdContaNoVermelho = new javax.swing.JLabel();
-        lgdContaNoVermelhoTexto = new javax.swing.JLabel();
-        lgdAmarela = new javax.swing.JLabel();
-        lgdAmarelaTexto = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        lgdLaranja = new javax.swing.JLabel();
-        lgdaranjaTexto = new javax.swing.JLabel();
         painelContasBancarias = new javax.swing.JPanel();
         scrollContaPoupanca = new javax.swing.JScrollPane();
         tabelaContabancaria = new javax.swing.JTable();
@@ -142,7 +135,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         mnCreditarEmPoupanca = new javax.swing.JMenuItem();
         mnDebitarSaldoPoupanca = new javax.swing.JMenuItem();
         mnTransferir = new javax.swing.JMenu();
-        mnTransferenciaEntreCorrentes = new javax.swing.JMenuItem();
+        mnTransferenciaEntreContas = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Sistemas de contas Bancarias");
@@ -289,7 +282,7 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbxTiposContas, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(257, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -321,46 +314,12 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         lgdDataHora.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lgdDataHora.setText("21-10-2025");
 
-        lgdContaNoVermelho.setBackground(new java.awt.Color(255, 0, 0));
-        lgdContaNoVermelho.setToolTipText("<html><p><b>Conta poupança:</b> Será bloqueado a transferência quando o saldo estiver zerado!</p>\n<p><b>Conta Corrente:</b> Será bloqueado a transfêrencia quando o saldo usar todo o  limite de crédito;</p></html>");
-        lgdContaNoVermelho.setOpaque(true);
-
-        lgdContaNoVermelhoTexto.setText("Bloqueada para débito e transferência");
-
-        lgdAmarela.setBackground(new java.awt.Color(255, 255, 0));
-        lgdAmarela.setToolTipText("<html><b>Conta Corrente:</b> Legenda ativa quando o saldo for todo utilizado ( 0 ) e começar a utilizar o limite de crédito da conta.</html>");
-        lgdAmarela.setOpaque(true);
-
-        lgdAmarelaTexto.setText("Utilizando o limite de crédito da  conta");
-
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel3.setText("Legendas:");
-
-        lgdLaranja.setBackground(java.awt.Color.orange);
-        lgdLaranja.setToolTipText("<html><b>Conta Poupança:</b> Legenda ativa quando o saldo da conta poupança estiver zerado.</html>");
-        lgdLaranja.setOpaque(true);
-
-        lgdaranjaTexto.setText("Bloqueada para transferência SP->SC");
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lgdContaNoVermelho, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lgdContaNoVermelhoTexto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lgdAmarela, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lgdAmarelaTexto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lgdLaranja, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lgdaranjaTexto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 180, Short.MAX_VALUE)
+                .addContainerGap(991, Short.MAX_VALUE)
                 .addComponent(lgdHorario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lgdDataHora, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -369,22 +328,11 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(lgdContaNoVermelho, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lgdContaNoVermelhoTexto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lgdAmarela, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lgdAmarelaTexto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lgdLaranja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lgdaranjaTexto))
-                .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(11, 11, 11)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(lgdDataHora, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lgdHorario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 6, Short.MAX_VALUE))
         );
 
         tabelaContabancaria.setModel(new javax.swing.table.DefaultTableModel(
@@ -516,15 +464,15 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
             }
         });
 
-        mnTransferenciaEntreCorrentes.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F8, 0));
-        mnTransferenciaEntreCorrentes.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        mnTransferenciaEntreCorrentes.setText("Tranferência entre Contas");
-        mnTransferenciaEntreCorrentes.addActionListener(new java.awt.event.ActionListener() {
+        mnTransferenciaEntreContas.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F8, 0));
+        mnTransferenciaEntreContas.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        mnTransferenciaEntreContas.setText("Tranferência entre Contas");
+        mnTransferenciaEntreContas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnTransferenciaEntreCorrentesActionPerformed(evt);
+                mnTransferenciaEntreContasActionPerformed(evt);
             }
         });
-        mnTransferir.add(mnTransferenciaEntreCorrentes);
+        mnTransferir.add(mnTransferenciaEntreContas);
 
         jMenuBar1.add(mnTransferir);
 
@@ -592,11 +540,11 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
         limparSelecaoTabelas();
             }//GEN-LAST:event_mnCreditarContaActionPerformed
 
-    private void mnTransferenciaEntreCorrentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnTransferenciaEntreCorrentesActionPerformed
-
+    private void mnTransferenciaEntreContasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnTransferenciaEntreContasActionPerformed
+        contasBancariasController.abrirViewTransferenciaEntreContas(EnumTipoOperacoes.TRANSFERIR, mnTransferenciaEntreContas.getText());
         limparSelecaoTabelas();
 
-    }//GEN-LAST:event_mnTransferenciaEntreCorrentesActionPerformed
+    }//GEN-LAST:event_mnTransferenciaEntreContasActionPerformed
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
 
@@ -623,13 +571,12 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
 
     private void btnExcluirContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirContaActionPerformed
         contasBancariasController.excluirContaBancaria(tabelaContabancaria.getSelectedRow());
-
+        desativarBotoes();
     }//GEN-LAST:event_btnExcluirContaActionPerformed
 
     private void btnEditarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarContaActionPerformed
-
         contasBancariasController.editarContaBancariaView(EnumAcaoView.EDITAR, tabelaContabancaria.getSelectedRow());
-
+        desativarBotoes();
     }//GEN-LAST:event_btnEditarContaActionPerformed
 
     private void tabelaContabancariaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelaContabancariaMouseClicked
@@ -711,7 +658,6 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
@@ -724,21 +670,15 @@ public class SimuladorDeContasBancariasPrincipalMain extends javax.swing.JFrame 
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JLabel lgdAmarela;
-    private javax.swing.JLabel lgdAmarelaTexto;
-    private javax.swing.JLabel lgdContaNoVermelho;
-    private javax.swing.JLabel lgdContaNoVermelhoTexto;
     private javax.swing.JLabel lgdContasTipos;
     private javax.swing.JLabel lgdCountContas;
     private javax.swing.JLabel lgdDataHora;
     private javax.swing.JLabel lgdHorario;
-    private javax.swing.JLabel lgdLaranja;
-    private javax.swing.JLabel lgdaranjaTexto;
     private javax.swing.JMenuItem mnCreditarConta;
     private javax.swing.JMenuItem mnCreditarEmPoupanca;
     private javax.swing.JMenuItem mnDebitarConta;
     private javax.swing.JMenuItem mnDebitarSaldoPoupanca;
-    private javax.swing.JMenuItem mnTransferenciaEntreCorrentes;
+    private javax.swing.JMenuItem mnTransferenciaEntreContas;
     private javax.swing.JMenu mnTransferir;
     private javax.swing.JPanel painelContasBancarias;
     private javax.swing.JScrollPane scrollContaPoupanca;

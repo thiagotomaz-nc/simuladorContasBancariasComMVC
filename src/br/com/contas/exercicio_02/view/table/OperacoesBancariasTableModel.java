@@ -20,7 +20,7 @@ public class OperacoesBancariasTableModel extends AbstractTableModel {
 
     private CacheOperacoesBancararias operacoesBancariasCache = new CacheOperacoesBancararias();
 
-    private String[] colunasPoupanca = {"#", "Código Operação", "Data da operação", "Conta Origem", "Conta Destino", "Operação","Valor da operação"};
+    private String[] colunasPoupanca = {"#", "Código Operação", "Data da operação", "Conta Origem", "Conta Destino", "Operação", "Valor da operação"};
 
     public OperacoesBancariasTableModel(CacheOperacoesBancararias operacoesBancariasCache) {
         this.operacoesBancariasCache = operacoesBancariasCache;
@@ -65,8 +65,7 @@ public class OperacoesBancariasTableModel extends AbstractTableModel {
             case 5:
                 return op.siglaOperacao();
             case 6:
-                int negativo = (op.getTipoOperacoes()==EnumTipoOperacoes.DEBITAR || op.getTipoOperacoes()==EnumTipoOperacoes.DEBITAR_SALDO_POUPANCA)?-1:1;
-                return  ConfigDefaultMoedaBR.moeda_foratada_brl(ConfigDefaultMoedaBR.ArredondarValor(op.getValorTransferido()*negativo));
+                return ConfigDefaultMoedaBR.moeda_foratada_brl(ConfigDefaultMoedaBR.ArredondarValor(op.getValorTransferido()));
             default:
                 throw new IndexOutOfBoundsException("erro nas colunas");
         }

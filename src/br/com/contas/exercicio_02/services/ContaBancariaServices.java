@@ -200,11 +200,29 @@ public class ContaBancariaServices {
         
         operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
     }
+    
+    public void transferenciaEntreContas(OperacaoBancaria op, ContaBancaria[] contaBancaria) throws SaldoNegaticoException, SaldoInsuficienteException, ContaExistenteException {
+        saldoPositivo(op.getValorTransferido());
+        verificarSaldoSuficiente(getSaldo(contaBancaria[0]),op.getValorTransferido());
+
+        op.setCodigoOperacao(gerarChaveDasOperacoes());
+        consultarOperacaoExistente(op.getCodigoOperacao());
+         
+        contaBancaria[0].debitar(op.getValorTransferido());
+        contaBancaria[1].crediditar(op.getValorTransferido());
+        
+        operacoesBancariasRepositorio.salvarOperacao(op.getCodigoOperacao(), op);
+    }
+    
         
     
     //*************************************
     //*** FIM DAS OPERACOES
     //*************************************
+
+    public void realizarTransferenciaEntreContas(ContaBancaria contaBancaria, ContaBancaria contaBancaria0, double valorTransferencia) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 
 }

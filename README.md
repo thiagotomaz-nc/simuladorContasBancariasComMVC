@@ -7,7 +7,7 @@ o conceito de arquitetura em camadas MVC;
 - [X] Utilizando o gerenciamento de arrayList ou hashMap por na camada repository;
 - [x] Utilizando formatação de moedas melhoramos a interação do usuário com o sistema.
 - [x] Unificando os tipos de contas bancarias em um só lista do tipo hashMap facilitamos a distinção
-- [ ] das contas pelo seu número de conta, garantindo que exista uma conta para cada número de conta.
+das contas pelo seu número de conta, garantindo que exista uma conta para cada número de conta.
 
 ## Resumo do MVC ##
 

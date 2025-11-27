@@ -14,7 +14,7 @@ das contas pelo seu número de conta, garantindo que exista uma conta para cada 
 ## Implementação com MVC
 
 - A busca pela organização de um código é um dos principais motivos pela adoção de uma arquitetura para auxiliar tanto nessa organização quanto na manutenção do código.
-Sendo assim, neste projeto foi utilizado o padrão do MVC para melhora-lo.
+Sendo assim, neste projeto foi utilizado o padrão do MVC (Model->View->Controller) para melhora-lo.
 
 # view 
     - Camada responsável pelo interface gráfica: Netbeans com Swing;
